@@ -8,7 +8,7 @@ import BusinessApplications from "@/components/aiml/BusinessApplications"; // To
 import CaseStudies from "@/components/aiml/CaseStudies";
 import StatsCounters from "@/components/aiml/StatsCounters";
 import CTASection from "@/components/aiml/CTASection";
-import AIChatbot from "@/components/AIChatbotGlobal";
+// import AIChatbot from "@/components/AIChatbotGlobal";
 import BackgroundEffects from "@/components/global/BackgroundEffects";
 
 // Import the centralized content
@@ -57,3 +57,4 @@ export default function AIMLPage() {
     </main>
   );
 }
+
