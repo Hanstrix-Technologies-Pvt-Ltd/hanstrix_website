@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
@@ -25,7 +25,7 @@ Prefer structured answers: short paragraphs, bullet points, and **bold** for key
 When unsure, say so briefly. When appropriate, suggest visiting the Contact page.
 `;
 
-export async function POST(req: NextRequest) {
+export async function POST(req) {
   try {
     const { message, context, history } = await req.json();
 
@@ -69,3 +69,4 @@ Current user message: "${message}"
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
