@@ -41,7 +41,7 @@ export async function POST(req) {
         ? "\n\nConversation so far:\n" +
           history
             .slice(-8)
-            .map((m: any) => `${m.role === "user" ? "User" : "Assistant"}: ${m.text}`)
+            .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.text}`)
             .join("\n")
         : "";
 
@@ -69,4 +69,5 @@ Current user message: "${message}"
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
 
