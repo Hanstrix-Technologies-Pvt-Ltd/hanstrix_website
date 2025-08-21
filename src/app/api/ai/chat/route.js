@@ -63,11 +63,12 @@ Current user message: "${message}"
 
     const safe = text.replace(/<\/?script[^>]*>/gi, "").trim();
     return NextResponse.json({ response: safe });
-  } catch (err: any) {
+  } catch (err) {
     console.error("AI Chat error:", err);
     const msg = typeof err?.message === "string" ? err.message : "AI service error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
 
 
