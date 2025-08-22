@@ -36,8 +36,9 @@ export default function InteractiveShowcase() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to analyze sentiment.");
       setSentiment(data.response);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

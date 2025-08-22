@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="flex-grow relative z-10">{children}</main>
           <Footer />
           {/* Global chatbot (hide on routes if needed) */}
-          <AIChatbotGlobal hideOnRoutes={[]} defaultOpen={false} />
+          <AIChatbotGlobal />
         </div>
       </body>
     </html>

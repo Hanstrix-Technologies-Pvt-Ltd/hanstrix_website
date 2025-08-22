@@ -43,7 +43,7 @@ export default function Features() {
         }}
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
       >
-        {erpSolutions.map((f, idx) => (
+        {erpSolutions.map((f) => (
           <motion.div
             key={f.title}
             variants={{

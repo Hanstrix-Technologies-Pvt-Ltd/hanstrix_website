@@ -107,12 +107,12 @@ export default function AIChatbotGlobal() {
       if (!res.ok) throw new Error(data.error || "Failed to get reply");
 
       setMessages((prev) => [...prev, { role: "bot", text: data.response }]);
-    } catch (err: any) {
-      if (err?.name !== "AbortError") {
-        setError(err?.message || "Something went wrong");
+    } catch (err: Error | unknown) {
+      if ((err as Error)?.name !== "AbortError") {
+        setError((err as Error)?.message || "Something went wrong");
         setMessages((prev) => [
           ...prev,
-          { role: "bot", text: "Sorry, I’m having trouble. Please try again." },
+          { role: "bot", text: "Sorry, I'm having trouble. Please try again." },
         ]);
       }
     } finally {

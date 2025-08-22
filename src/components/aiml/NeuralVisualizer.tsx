@@ -3,14 +3,6 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 
-/**
- * Responsive, animated neural network diagram using SVG + Framer Motion.
- * - Auto-sizes via viewBox, fills parent.
- * - Pulsing signal flows left -> right repeatedly.
- * - Neon gradients to match your theme.
- */
-
-type LayerSpec = number[]; // number of nodes per layer, e.g. [3, 5, 4, 2]
 interface NeuralVisualizerProps {
   layers?: number[];           // nodes per layer
   cycleSec?: number;           // animation duration

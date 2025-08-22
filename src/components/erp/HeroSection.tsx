@@ -41,7 +41,7 @@ export default function HeroSection({
   const imgProps = useMemo(
     () => ({
       src: "/images/ERP.png",
-      alt: "Customized ERP Software",
+      alt: "Customized ERP Software - Visual representation of our ERP system interface",
       width: 900,
       height: 600,
       className: "rounded-2xl border border-white/10 bg-white/5 shadow-2xl",
@@ -77,7 +77,7 @@ export default function HeroSection({
             aria-hidden
           >
             <div className="relative w-full max-w-[540px]">
-              <Image {...imgProps} priority />
+              <Image {...imgProps} priority alt={imgProps.alt} />
               <div className="pointer-events-none absolute -inset-8 -z-10 rounded-[2rem] bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,255,255,0.18),rgba(138,43,226,0.12)_60%,transparent)] blur-2xl" />
             </div>
           </motion.div>
@@ -180,7 +180,7 @@ export default function HeroSection({
           className="relative flex justify-center"
         >
           <div className="relative w-full max-w-[520px]">
-            <Image {...imgProps} priority={false} />
+            <Image {...imgProps} priority={false} alt={imgProps.alt} />
             <div className="pointer-events-none absolute -inset-8 -z-10 rounded-[2rem] bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,255,255,0.18),rgba(138,43,226,0.12)_60%,transparent)] blur-2xl" />
           </div>
         </motion.div>

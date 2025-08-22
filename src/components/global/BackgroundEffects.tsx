@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+// @ts-expect-error - Vanta.js types are not properly defined for TypeScript
 import NET from "vanta/dist/vanta.net.min";
 
 export default function VantaBackground() {
   const vantaRef = useRef<HTMLDivElement>(null);
-  const vantaEffect = useRef<any>(null);
+  const vantaEffect = useRef<THREE.Object3D | null>(null);
 
   useEffect(() => {
     if (!vantaEffect.current) {
@@ -29,7 +30,7 @@ export default function VantaBackground() {
 
     return () => {
       if (vantaEffect.current) {
-        vantaEffect.current.destroy();
+        (vantaEffect.current as THREE.Object3D & { destroy: () => void }).destroy();
         vantaEffect.current = null;
       }
     };

@@ -11,17 +11,23 @@ const container = {
     transition: { staggerChildren: 0.12, delayChildren: 0.08 },
   },
 };
-const item = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
-};
 
 const TimelineStep = ({ step, index }: { step: Step; index: number }) => {
   const isEven = index % 2 === 0;
 
   return (
     <motion.li
-      variants={item}
+      variants={{
+        hidden: { opacity: 0, y: 22 },
+        show: { 
+          opacity: 1, 
+          y: 0, 
+          transition: { 
+            duration: 0.55, 
+            ease: [0.43, 0.13, 0.23, 0.96] 
+          } 
+        }
+      }}
       role="listitem"
       className={`w-full lg:w-1/2 ${isEven ? "lg:self-start lg:text-left" : "lg:self-end lg:text-right"}`}
     >

@@ -43,7 +43,7 @@ export default function KeyFeatures() {
           <h2 className="text-2xl md:text-3xl font-bold text-gradient-neon">
             Key Features That Drive ERP
           </h2>
-          {features.map((f, idx) => (
+          {features.map((f) => (
             <div
               key={f.title}
               className="glass-card rounded-xl p-4 flex items-start gap-3"

@@ -8,7 +8,7 @@ export const AiAssistantInfo = () => {
         <span className="text-gradient-neon">Our AI Assistant</span>
       </h3>
       <p className="text-white text-sm leading-relaxed">
-        Our contact form is powered by a smart assistant. Just briefly describe your needs, and it will draft a professional message, detect your inquiry's intent, and suggest an optimal subject line—making communication effortless and precise.
+        Our contact form is powered by a smart assistant. Just briefly describe your needs, and it will draft a professional message, detect your inquiry&apos;s intent, and suggest an optimal subject line—making communication effortless and precise.
       </p>
     </div>
   );

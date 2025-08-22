@@ -113,29 +113,29 @@ export default function AiSummaryButton({
                 <div className="space-y-4 text-white/90">
                   <ReactMarkdown
                     components={{
-                      h1: ({ node, ...props }) => (
+                      h1: ({ ...props }) => (
                         <h1 className="text-2xl md:text-3xl font-bold text-white mt-6" {...props} />
                       ),
-                      h2: ({ node, ...props }) => (
+                      h2: ({ ...props }) => (
                         <h2 className="text-xl md:text-2xl font-semibold text-white mt-5" {...props} />
                       ),
-                      h3: ({ node, ...props }) => (
+                      h3: ({ ...props }) => (
                         <h3 className="text-lg md:text-xl font-semibold text-white mt-4" {...props} />
                       ),
-                      p: ({ node, ...props }) => (
+                      p: ({ ...props }) => (
                         <p className="leading-relaxed text-white/85" {...props} />
                       ),
-                      ul: ({ node, ...props }) => (
+                      ul: ({ ...props }) => (
                         <ul className="list-disc pl-5 space-y-1 marker:text-cyan-400" {...props} />
                       ),
-                      ol: ({ node, ...props }) => (
+                      ol: ({ ...props }) => (
                         <ol className="list-decimal pl-5 space-y-1 marker:text-cyan-400" {...props} />
                       ),
-                      li: ({ node, ...props }) => (
+                      li: ({ ...props }) => (
                         <li className="leading-relaxed" {...props} />
                       ),
                       hr: () => <hr className="border-gray-700 my-4" />,
-                      strong: ({ node, ...props }) => (
+                      strong: ({ ...props }) => (
                         <strong className="text-white" {...props} />
                       ),
                     }}

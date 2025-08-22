@@ -6,7 +6,7 @@ const CursorGlow = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
 
@@ -21,8 +21,8 @@ const CursorGlow = () => {
     <div
       className="cursor-glow"
       style={{
-        '--x': `${position.x}px`,
-        '--y': `${position.y}px`,
+        ['--x' as string]: `${position.x}px`,
+        ['--y' as string]: `${position.y}px`,
       }}
     />
   );

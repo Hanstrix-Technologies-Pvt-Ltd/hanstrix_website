@@ -74,8 +74,10 @@ export default function StatsCounters() {
       rafIds.current[i] = requestAnimationFrame(tick);
     });
 
+    const currentRafIds = rafIds.current;
     return () => {
-      rafIds.current.forEach((id) => cancelAnimationFrame(id));
+      const ids = [...currentRafIds];
+      ids.forEach((id) => cancelAnimationFrame(id));
     };
   }, [started]);
 

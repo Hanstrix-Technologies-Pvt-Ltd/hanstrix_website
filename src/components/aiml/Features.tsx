@@ -55,7 +55,7 @@ const isTouchDevice = () =>
 
 export default function Features({ items = defaultItems }: { items?: FeatureItem[] }) {
   const reduced = useReducedMotion();
-  const allowTilt = useMemo(() => !reduced.current && !isTouchDevice(), [reduced.current]);
+  const allowTilt = useMemo(() => !reduced.current && !isTouchDevice(), [reduced]);
 
   // rAF throttle for tilt
   const rafRef = useRef<number | null>(null);

@@ -3,13 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.GEMINI_API_KEY;
-if (!apiKey) throw new Error("GEMINI_API_KEY is not defined");
 
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
-  generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 128 },
-});
+// Initialize genAI and model only if apiKey is available
+let genAI: GoogleGenerativeAI | null = null;
+let model: ReturnType<GoogleGenerativeAI['getGenerativeModel']> | null = null;
+
+if (apiKey) {
+  genAI = new GoogleGenerativeAI(apiKey);
+  model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash",
+    generationConfig: { temperature: 0.2, topP: 0.9, maxOutputTokens: 128 },
+  });
+}
 
 function normalizeSentiment(raw: string): "Positive 🙂" | "Negative 🙁" | "Neutral 😐" {
   const t = raw.toLowerCase();
@@ -20,6 +25,10 @@ function normalizeSentiment(raw: string): "Positive 🙂" | "Negative 🙁" | "N
 
 export async function POST(req: NextRequest) {
   try {
+    if (!apiKey || !model) {
+      return NextResponse.json({ error: "AI service not configured" }, { status: 503 });
+    }
+
     const { task, input } = await req.json();
     if (!task || !input || typeof input !== "string" || !input.trim()) {
       return NextResponse.json({ error: "Missing 'task' or 'input'" }, { status: 400 });

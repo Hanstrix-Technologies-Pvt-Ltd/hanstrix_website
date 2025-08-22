@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
-    VANTA: any;
-    THREE: any;
+    VANTA: unknown;
+    THREE: unknown;
   }
 }
 
 export const VantaBackground = () => {
-  const [vantaEffect, setVantaEffect] = useState<any>(null);
+  const [vantaEffect, setVantaEffect] = useState<unknown>(null);
   const vantaRef = useRef<HTMLDivElement>(null);
 
   // This useEffect handles the initial setup of the animation
@@ -36,7 +36,19 @@ export const VantaBackground = () => {
       loadScript('https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.halo.min.js', () => {
         if (vantaRef.current && !vantaEffect && window.VANTA) {
           const timer = setTimeout(() => {
-            const effect = window.VANTA.HALO({
+            const effect = ((window.VANTA as { HALO: (config: {
+              el: HTMLDivElement | null;
+              THREE: unknown;
+              mouseControls: boolean;
+              touchControls: boolean;
+              gyroControls: boolean;
+              minHeight: number;
+              minWidth: number;
+              baseColor: number;
+              backgroundColor: number;
+              amplitudeFactor: number;
+              size: number;
+            }) => unknown }).HALO)({
               el: vantaRef.current,
               THREE: window.THREE,
               mouseControls: true,
@@ -59,7 +71,7 @@ export const VantaBackground = () => {
 
     return () => {
       if (vantaEffect) {
-        vantaEffect.destroy();
+        (vantaEffect as { destroy: () => void }).destroy();
       }
     };
   }, [vantaEffect]);
@@ -68,7 +80,7 @@ export const VantaBackground = () => {
   useEffect(() => {
     if (vantaEffect) {
       const handleResize = () => {
-        vantaEffect.resize();
+        (vantaEffect as { resize: () => void }).resize();
       };
       
       window.addEventListener('resize', handleResize);

@@ -185,7 +185,7 @@ export const ContactForm = () => {
                     name="requirementsPrompt" 
                     value={formData.requirementsPrompt} 
                     onChange={handleChange} 
-                    rows="3" 
+                    rows={3}
                     className={inputClasses} 
                     placeholder="e.g., I need a custom AI chatbot for my e-commerce site..." 
                 />
@@ -210,7 +210,7 @@ export const ContactForm = () => {
             </div>
             <div>
                 <label htmlFor="message" className="block text-sm font-medium text-white mb-1.5">Your Message</label>
-                <textarea id="message" name="message" value={typedMessage || formData.message} onChange={handleChange} rows="5" className={inputClasses} placeholder="Your detailed message will appear here after generation..." required />
+                <textarea id="message" name="message" value={typedMessage || formData.message} onChange={handleChange} rows={5} className={inputClasses} placeholder="Your detailed message will appear here after generation..." required />
             </div>
             <div>
                  <label htmlFor="subject" className="block text-sm font-medium text-white mb-1.5">Subject</label>
