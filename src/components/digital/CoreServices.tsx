@@ -3,6 +3,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { coreServices } from "@/content/digitalmarketing-page-content";
+import type { LucideIcon } from "lucide-react";
+
+// Strong type for your content items
+type Service = {
+  title: string;
+  description: string;
+  icon?: LucideIcon; // Lucide icon component (optional)
+};
 
 // lightweight tilt (no deps)
 const onTilt = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -19,6 +27,9 @@ const resetTilt = (e: React.MouseEvent<HTMLDivElement>) => {
 };
 
 export default function CoreServices() {
+  // Narrow the imported data to the shape we expect
+  const services = coreServices as Service[];
+
   return (
     <section className="px-4 sm:px-5 lg:px-16 py-8 md:py-10">
       <motion.h2
@@ -40,7 +51,7 @@ export default function CoreServices() {
         </div>
 
         <div className="flex flex-col gap-7">
-          {coreServices.map((s: any, idx: number) => {
+          {services.map((s, idx) => {
             const leftSide = idx % 2 === 0;
             const edgeGrad = leftSide
               ? "from-cyan-400 to-purple-500"
@@ -86,7 +97,7 @@ export default function CoreServices() {
                     ${leftSide ? "mr-[70px]" : "ml-[70px]"}
                   `}
                 >
-                  {/* gentle sheen — FIX: use backgroundImage + backgroundRepeat (no shorthand) */}
+                  {/* gentle sheen */}
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0"
@@ -120,9 +131,7 @@ export default function CoreServices() {
 
                   <div className={`relative z-10 p-4 ${leftSide ? "" : "text-right"}`}>
                     <div
-                      className={`flex items-start gap-3 ${
-                        leftSide ? "" : "flex-row-reverse"
-                      }`}
+                      className={`flex items-start gap-3 ${leftSide ? "" : "flex-row-reverse"}`}
                     >
                       {s.icon ? (
                         <s.icon className="w-6 h-6 text-cyan-300 shrink-0" />
@@ -152,7 +161,7 @@ export default function CoreServices() {
       {/* Mobile: compact stacked cards with slim rail */}
       <div className="md:hidden">
         <div className="space-y-3">
-          {coreServices.map((s: any, i: number) => (
+          {services.map((s, i) => (
             <motion.div
               key={s.title}
               initial={{ opacity: 0, y: 10 }}

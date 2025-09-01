@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { coreOfferings } from "@/content/webdev-page-content";
-import { useCallback } from "react";
 
 // pointer-reactive glow (perf-safe)
 const onMove = (e: React.MouseEvent<HTMLDivElement>) => {

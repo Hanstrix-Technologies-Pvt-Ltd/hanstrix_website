@@ -8,7 +8,6 @@ import CoreServices from "@/components/digital/CoreServices";
 import StrategicPillars from "@/components/digital/StrategicPillars";
 import WhyEssential from "@/components/digital/WhyEssential";
 import CTASection from "@/components/digital/CTASection";
-// import ResultsDashboard from "@/components/digital/ResultDashboard";
 
 // Content
 import {
@@ -32,7 +31,6 @@ export default function DigitalMarketingPage() {
         <CoreServices />
         <StrategicPillars />
         <WhyEssential />
-        {/* <ResultsDashboard /> */}
         <CTASection />
         <div className="px-6 sm:px-12 lg:px-20 pb-10">
           <ClientLogos />

@@ -1,16 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { whyChooseUs } from "@/content/webdev-page-content";
 
 export default function WhyChooseUs() {
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+    },
   };
-  const stripe = {
+
+  // Recommended best fix: explicit cubic-bezier easing (typed as Variants)
+  const stripe: Variants = {
     hidden: { opacity: 0, y: 14 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] }, // ~easeOutQuint feel
+    },
   };
 
   const gradients = [
@@ -19,9 +28,8 @@ export default function WhyChooseUs() {
     "linear-gradient(90deg, rgba(0,198,255,0.20), rgba(0,198,255,0.06))",
   ];
 
-  // angled ends
   const clipRight = "polygon(0 0, 96% 0, 100% 50%, 96% 100%, 0 100%)";
-  const clipLeft  = "polygon(0 50%, 4% 0, 100% 0, 100% 100%, 4% 100%)";
+  const clipLeft = "polygon(0 50%, 4% 0, 100% 0, 100% 100%, 4% 100%)";
 
   return (
     <section className="px-6 lg:px-20 py-5 md:py-12 relative">
@@ -54,23 +62,20 @@ export default function WhyChooseUs() {
         className="hidden sm:block max-w-6xl mx-auto mt-8 space-y-5"
       >
         {whyChooseUs.map((item, i) => {
-          const even = i % 2 === 0; // even => rail on right
+          const even = i % 2 === 0;
           const bg = gradients[i % gradients.length];
 
           return (
             <motion.article key={item.title} variants={stripe} className="relative">
-              {/* --- RAIL OUTSIDE THE CLIPPED STRIPE (no clipping now) --- */}
-              {/* bright core */}
+              {/* rail */}
               <div
                 className={`absolute top-1.5 bottom-1.5 w-[8px] rounded ${
                   even ? "right-[-4px]" : "left-[-4px]"
                 }`}
                 style={{
-                  background:
-                    "linear-gradient(180deg, #00C6FF, #8A2BE2, #00C6FF)",
+                  background: "linear-gradient(180deg, #00C6FF, #8A2BE2, #00C6FF)",
                 }}
               />
-              {/* glow halo */}
               <div
                 aria-hidden
                 className={`absolute top-0 bottom-0 w-14 blur-2xl ${
@@ -83,7 +88,7 @@ export default function WhyChooseUs() {
                 }}
               />
 
-              {/* STRIPE (clipped) */}
+              {/* stripe */}
               <div
                 className="relative overflow-hidden rounded-2xl border border-white/10 glass-card"
                 style={{ clipPath: even ? clipRight : clipLeft }}
@@ -145,7 +150,7 @@ export default function WhyChooseUs() {
                     <motion.div
                       initial={{ width: "28%" }}
                       whileHover={{ width: "100%" }}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                       className={`mt-4 h-[3px] rounded-full bg-gradient-neon opacity-90 ${
                         even ? "" : "ml-auto"
                       }`}
@@ -166,7 +171,8 @@ export default function WhyChooseUs() {
             className="flex items-start gap-2 before:content-['✓'] before:text-cyan-400"
           >
             <span>
-              <strong className="text-gradient-neonsubtle">{item.title}</strong> — {item.description}
+              <strong className="text-gradient-neonsubtle">{item.title}</strong> —{" "}
+              {item.description}
             </span>
           </li>
         ))}

@@ -12,6 +12,9 @@ const HIGHLIGHTS = [
   { icon: BarChart3, title: "Transparent reports", desc: "GA4 dashboards with channel level ROI." },
 ];
 
+// ✅ Move tags outside so its length is static and safe for an empty dep array.
+const TAGS = ["SEO", "PPC", "Social", "Content", "Email", "Analytics"] as const;
+
 export default function HeroSection({
   pageContent,
   serviceName,
@@ -19,12 +22,12 @@ export default function HeroSection({
   pageContent: string;
   serviceName: string;
 }) {
-  const tags = ["SEO", "PPC", "Social", "Content", "Email", "Analytics"];
   const [i, setI] = useState(0);
+
   useEffect(() => {
-    const t = setInterval(() => setI((p) => (p + 1) % tags.length), 2200);
+    const t = setInterval(() => setI((p) => (p + 1) % TAGS.length), 2200);
     return () => clearInterval(t);
-  }, []);
+  }, []); // ✅ safe now
 
   return (
     <>
@@ -100,7 +103,7 @@ export default function HeroSection({
                     transition={{ duration: 0.45, ease: "easeOut" }}
                     className="inline-block text-base sm:text-lg md:text-xl font-semibold text-gradient-neonsubtle"
                   >
-                    Campaigns that perform in {tags[i]}
+                    Campaigns that perform in {TAGS[i]}
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -116,7 +119,6 @@ export default function HeroSection({
                     key={title}
                     className="rounded-xl border border-white/10 bg-white/5 p-4 text-left h-full flex flex-col"
                   >
-                    {/* title row: same height across cards so descriptions align */}
                     <div className="flex items-start gap-2 text-white md:h-[44px] lg:h-[48px]">
                       <Icon className="w-4 h-4 text-cyan-300 shrink-0 mt-0.5" />
                       <span className="text-sm font-semibold leading-tight">{title}</span>
@@ -145,7 +147,7 @@ export default function HeroSection({
         </div>
       </section>
 
-      {/* ===== Mobile: Screen 1 (content) — unchanged ===== */}
+      {/* ===== Mobile: Screen 1 (content) ===== */}
       <section className="md:hidden relative px-3 pt-[calc(96px+env(safe-area-inset-top))] pb-2">
         <div className="w-full text-center">
           <div className="mb-2">
@@ -175,7 +177,7 @@ export default function HeroSection({
                 transition={{ duration: 0.45, ease: "easeOut" }}
                 className="inline-block text-base font-semibold text-gradient-neonsubtle"
               >
-                Campaigns that perform in {tags[i]}
+                Campaigns that perform in {TAGS[i]}
               </motion.div>
             </AnimatePresence>
           </div>

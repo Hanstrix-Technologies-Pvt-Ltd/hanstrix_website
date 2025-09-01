@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { processSteps } from "@/content/webdev-page-content";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback } from "react";
 
 type Step = { title: string; description: string };
 
@@ -47,6 +48,13 @@ export default function Process() {
     scrollToIndex(next, "smooth");
     window.setTimeout(() => (ignoreScrollRef.current = false), 360);
   };
+
+  const makeCardRef = useCallback(
+    (index: number) => (el: HTMLDivElement | null) => {
+      cardRefs.current[index] = el;
+    },
+    []
+  );
 
   const handleScroll = () => {
     if (ignoreScrollRef.current) return;
@@ -193,7 +201,7 @@ export default function Process() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="w-[86%] sm:w-[72%] shrink-0 grow-0 snap-center"
-              ref={(el) => (cardRefs.current[i] = el)}
+              ref={makeCardRef(i)}
             >
               <div className="glass-card rounded-2xl p-4 border border-white/10 h-full flex flex-col">
                 <div className="flex items-center gap-3">

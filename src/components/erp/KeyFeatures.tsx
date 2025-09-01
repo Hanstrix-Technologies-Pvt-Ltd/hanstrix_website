@@ -3,9 +3,10 @@
 import { motion } from "framer-motion";
 import { ShieldCheck, Gauge, Users, Zap } from "lucide-react";
 import Image from "next/image";
+import type { LucideIcon } from "lucide-react";
 import React from "react";
 
-type Feature = { title: string; desc: string; icon: React.ElementType };
+type Feature = { title: string; desc: string; icon: LucideIcon };
 
 const features: Feature[] = [
   { title: "Robust Security", desc: "Multi-layered encryption and role-based access controls.", icon: ShieldCheck },
@@ -173,7 +174,7 @@ function FeatureStackCard({
       <span aria-hidden className="pointer-events-none absolute inset-x-3 -top-1 h-[3px] rounded-full bg-gradient-neon" />
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 rounded-lg bg-white/6 border border-white/10 grid place-items-center shrink-0">
-          <feature.icon className="w-5 h-5 text-cyan-300" />
+          <Icon className="w-5 h-5 text-cyan-300" />
         </div>
         <div>
           <h3 className="text-white font-semibold">{feature.title}</h3>

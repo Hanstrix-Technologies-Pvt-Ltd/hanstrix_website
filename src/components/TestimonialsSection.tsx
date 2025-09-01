@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
 type Testimonial = {
@@ -10,42 +10,12 @@ type Testimonial = {
 };
 
 const TESTIMONIALS: Testimonial[] = [
-  {
-    quote:
-      "Hanstrix Technologies transformed our online presence. Their expertise in digital marketing drove a significant increase in our lead generation, and the support was excellent.",
-    name: "John Doe",
-    title: "CEO, Tech Solutions Inc.",
-  },
-  {
-    quote:
-      "The customized ERP solution they developed for us streamlined our operations and cut our costs by 20%. The team was professional and highly responsive.",
-    name: "Jane Smith",
-    title: "Operations Manager, Global Corp.",
-  },
-  {
-    quote:
-      "Their website development team is top-notch. They delivered a beautiful, fast, and secure website that has received nothing but praise from our users.",
-    name: "Alex Johnson",
-    title: "Founder, Innovate Co.",
-  },
-  {
-    quote:
-      "Hanstrix's AI solutions gave us a competitive edge. The predictive analytics they implemented completely changed how we make business decisions.",
-    name: "Emily Davis",
-    title: "Chief Data Officer, DataStream",
-  },
-  {
-    quote:
-      "From discovery to launch, the process was smooth. Our paid media ROAS improved by 35% within two months.",
-    name: "Rahul Verma",
-    title: "Head of Growth, SnapFin",
-  },
-  {
-    quote:
-      "Excellent collaboration and reliable delivery. Their SEO and content engine keeps driving compounding organic traffic.",
-    name: "Sophia Lee",
-    title: "Marketing Director, BloomLabs",
-  },
+  { quote: "Hanstrix Technologies transformed our online presence. Their expertise in digital marketing drove a significant increase in our lead generation, and the support was excellent.", name: "John Doe", title: "CEO, Tech Solutions Inc." },
+  { quote: "The customized ERP solution they developed for us streamlined our operations and cut our costs by 20%. The team was professional and highly responsive.", name: "Jane Smith", title: "Operations Manager, Global Corp." },
+  { quote: "Their website development team is top-notch. They delivered a beautiful, fast, and secure website that has received nothing but praise from our users.", name: "Alex Johnson", title: "Founder, Innovate Co." },
+  { quote: "Hanstrix's AI solutions gave us a competitive edge. The predictive analytics they implemented completely changed how we make business decisions.", name: "Emily Davis", title: "Chief Data Officer, DataStream" },
+  { quote: "From discovery to launch, the process was smooth. Our paid media ROAS improved by 35% within two months.", name: "Rahul Verma", title: "Head of Growth, SnapFin" },
+  { quote: "Excellent collaboration and reliable delivery. Their SEO and content engine keeps driving compounding organic traffic.", name: "Sophia Lee", title: "Marketing Director, BloomLabs" },
 ];
 
 export default function TestimonialsSection() {
@@ -53,11 +23,9 @@ export default function TestimonialsSection() {
   const marqueeData = useMemo(() => [...TESTIMONIALS, ...TESTIMONIALS], []);
   // Mobile: tripled for true infinite wrap
   const N = TESTIMONIALS.length;
-  const tripled = useMemo(
-    () => [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS],
-    []
-  );
+  const tripled = useMemo(() => [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS], []);
   const baseStartIndex = N; // middle copy
+  const baseStartIndexRef = useRef(baseStartIndex); // stable snapshot for mount-only logic
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [cellWidth, setCellWidth] = useState(0);
@@ -67,29 +35,31 @@ export default function TestimonialsSection() {
   const touchEndTimer = useRef<number | null>(null);
 
   // Helpers
-  const enableSnapNextFrame = () => {
-    // re-enable snap in the next frame(s) to avoid jitter
+  const enableSnapNextFrame = useCallback(() => {
     requestAnimationFrame(() => setSnapOn(true));
-  };
+  }, []);
 
-  const teleport = (leftPx: number) => {
+  const teleport = useCallback((leftPx: number) => {
     const el = trackRef.current;
     if (!el) return;
     setSnapOn(false);
     el.scrollTo({ left: leftPx, behavior: "auto" });
     enableSnapNextFrame();
-  };
+  }, [enableSnapNextFrame]);
 
-  const goTo = (i: number, smooth = true) => {
-    const el = trackRef.current;
-    if (!el || cellWidth === 0) return;
-    el.scrollTo({
-      left: (baseStartIndex + i) * cellWidth,
-      behavior: smooth ? "smooth" : "auto",
-    });
-  };
+  const goTo = useCallback(
+    (i: number, smooth = true) => {
+      const el = trackRef.current;
+      if (!el || cellWidth === 0) return;
+      el.scrollTo({
+        left: (baseStartIndexRef.current + i) * cellWidth,
+        behavior: smooth ? "smooth" : "auto",
+      });
+    },
+    [cellWidth]
+  );
 
-  // Measure slide width & land on the middle copy
+  // Measure slide width & land on the middle copy (mount + resize)
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -97,14 +67,14 @@ export default function TestimonialsSection() {
     const measure = () => {
       const w = el.clientWidth;
       setCellWidth(w);
-      teleport(baseStartIndex * w);
+      teleport(baseStartIndexRef.current * w);
     };
 
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [teleport]);
 
   // Infinite wrap + active dot sync
   useEffect(() => {
@@ -116,23 +86,22 @@ export default function TestimonialsSection() {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const raw = el.scrollLeft / cellWidth;
-        // Guard/clamp
         const rawIndex = Math.max(0, Math.round(raw));
 
         // Left outer copy (0 .. N-1): teleport to middle, same item
         if (rawIndex < N) {
           teleport((rawIndex + N) * cellWidth);
-          setActive(rawIndex); // normalized 0..N-1
+          setActive(rawIndex);
           return;
         }
         // Right outer copy (2N .. 3N-1): teleport to middle, same item
         if (rawIndex >= 2 * N) {
           teleport((rawIndex - N) * cellWidth);
-          setActive(rawIndex - 2 * N); // normalized 0..N-1
+          setActive(rawIndex - 2 * N);
           return;
         }
         // Middle copy (N .. 2N-1)
-        setActive(rawIndex - N); // normalized 0..N-1
+        setActive(rawIndex - N);
       });
     };
 
@@ -141,7 +110,7 @@ export default function TestimonialsSection() {
       cancelAnimationFrame(raf);
       el.removeEventListener("scroll", onScroll);
     };
-  }, [cellWidth, N]);
+  }, [cellWidth, N, teleport]);
 
   // Pause autoplay during touch/drag; resume after momentum settles
   useEffect(() => {
@@ -156,7 +125,6 @@ export default function TestimonialsSection() {
       }
     };
     const onTouchEndLike = () => {
-      // wait a bit for momentum scrolling to finish
       if (touchEndTimer.current) window.clearTimeout(touchEndTimer.current);
       touchEndTimer.current = window.setTimeout(() => {
         isTouchingRef.current = false;
@@ -187,7 +155,7 @@ export default function TestimonialsSection() {
       goTo((active + 1) % N, true);
     }, 3800);
     return () => window.clearInterval(id);
-  }, [active, cellWidth, N]);
+  }, [active, cellWidth, N, goTo]);
 
   return (
     <section id="testimonials" className="relative py-16 md:py-20 lg:py-24">
@@ -212,15 +180,10 @@ export default function TestimonialsSection() {
           />
           <div className="flex w-max animate-ts-marquee-slow">
             {marqueeData.map((t, idx) => (
-              <div
-                key={`desk-a-${idx}`}
-                className="w-96 md:w-[420px] lg:w-[460px] px-3"
-              >
+              <div key={`desk-a-${idx}`} className="w-96 md:w-[420px] lg:w-[460px] px-3">
                 <Card className="bg-transparent border-white/20 text-white p-6 h-full">
                   <CardContent className="p-0">
-                    <p className="text-[15px] leading-relaxed opacity-90">
-                      {t.quote}
-                    </p>
+                    <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
                     <div className="text-right mt-4">
                       <p className="font-semibold text-cyan-400">{t.name}</p>
                       <p className="text-sm text-gray-400">{t.title}</p>
@@ -230,15 +193,10 @@ export default function TestimonialsSection() {
               </div>
             ))}
             {marqueeData.map((t, idx) => (
-              <div
-                key={`desk-b-${idx}`}
-                className="w-96 md:w-[420px] lg:w-[460px] px-3"
-              >
+              <div key={`desk-b-${idx}`} className="w-96 md:w-[420px] lg:w-[460px] px-3">
                 <Card className="bg-transparent border-white/20 text-white p-6 h-full">
                   <CardContent className="p-0">
-                    <p className="text-[15px] leading-relaxed opacity-90">
-                      {t.quote}
-                    </p>
+                    <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
                     <div className="text-right mt-4">
                       <p className="font-semibold text-cyan-400">{t.name}</p>
                       <p className="text-sm text-gray-400">{t.title}</p>
@@ -264,16 +222,10 @@ export default function TestimonialsSection() {
           }}
         >
           {tripled.map((t, i) => (
-            <div
-              key={`m-${i}`}
-              className="shrink-0 w-full px-4 snap-start"
-              style={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
-            >
+            <div key={`m-${i}`} className="shrink-0 w-full px-4 snap-start" style={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}>
               <Card className="bg-transparent border-white/20 text-white p-5 h-full">
                 <CardContent className="p-0">
-                  <p className="text-[15px] leading-relaxed opacity-90">
-                    {t.quote}
-                  </p>
+                  <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
                   <div className="text-right mt-4">
                     <p className="font-semibold text-cyan-400">{t.name}</p>
                     <p className="text-sm text-gray-400">{t.title}</p>
@@ -312,23 +264,12 @@ export default function TestimonialsSection() {
       {/* Local keyframes (ASCII-only) */}
       <style jsx>{`
         @keyframes ts-marquee-slow {
-          0% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
         }
-        .animate-ts-marquee-slow {
-          animation: ts-marquee-slow 70s linear infinite;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+        .animate-ts-marquee-slow { animation: ts-marquee-slow 70s linear infinite; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </section>
   );

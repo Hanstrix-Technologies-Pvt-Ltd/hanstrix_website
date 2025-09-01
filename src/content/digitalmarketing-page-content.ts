@@ -7,7 +7,6 @@ import {
   BarChart2 as BarChart,
   TrendingUp,
   Compass,
-  Sparkle,
   Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
