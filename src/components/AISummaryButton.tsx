@@ -1,4 +1,3 @@
-// components/AISummaryButton.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -13,7 +12,7 @@ type Size = "sm" | "md" | "lg";
 export default function AiSummaryButton({
   content,
   serviceName,
-  variant = "ghost", // keep it subtle in the hero
+  variant = "secondary", // matches hero CTA as a subtle secondary
   size = "md",
   className = "",
   label = "Quick Summary",
@@ -65,20 +64,21 @@ export default function AiSummaryButton({
 
   const variantClasses =
     variant === "primary"
-      ? "bg-gradient-neon text-white border border-white/10 shadow-lg"
+      ? // no ring unless focused; no outlines to avoid color fringe
+        "bg-gradient-neon text-white border border-white/10 shadow-lg outline-none ring-0 focus-visible:ring-2 focus-visible:ring-cyan-400/50"
       : variant === "secondary"
-      ? "bg-white/10 text-white border border-white/10 hover:bg-white/20"
+      ? "bg-white/10 text-white border border-white/10 hover:bg-white/20 outline-none ring-0 focus-visible:ring-2 focus-visible:ring-cyan-400/40"
       : variant === "link"
       ? "bg-transparent text-cyan-300 hover:text-white underline-offset-4 hover:underline"
-      : // ghost (default)
-        "bg-transparent text-white/80 hover:text-white border border-white/10";
+      : // ghost
+        "bg-transparent text-white/80 hover:text-white border border-white/10 outline-none ring-0 focus-visible:ring-2 focus-visible:ring-cyan-400/30";
 
   return (
     <div className={`relative z-20 ${className}`}>
       <Button
         onClick={handleSummarize}
         disabled={loading}
-        className={`inline-flex items-center gap-2 ${sizeClasses} ${variantClasses}`}
+        className={`inline-flex items-center gap-2 rounded-full ${sizeClasses} ${variantClasses}`}
         aria-label="Open page summary"
       >
         <Sparkles className="w-4 h-4" />
@@ -87,7 +87,7 @@ export default function AiSummaryButton({
 
       {error && <p className="mt-2 text-red-500 text-sm animate-pulse">{error}</p>}
 
-      {/* Render modal only after mount to avoid SSR issues */}
+      {/* modal */}
       {mounted && summary &&
         createPortal(
           <div
@@ -108,36 +108,18 @@ export default function AiSummaryButton({
                 <h4 className="font-bold mb-6 text-xl sm:text-2xl md:text-3xl text-gradient-neon">
                   Page Summary
                 </h4>
-
-                {/* Clean, readable markdown without needing @tailwindcss/typography */}
                 <div className="space-y-4 text-white/90">
                   <ReactMarkdown
                     components={{
-                      h1: ({ ...props }) => (
-                        <h1 className="text-2xl md:text-3xl font-bold text-white mt-6" {...props} />
-                      ),
-                      h2: ({ ...props }) => (
-                        <h2 className="text-xl md:text-2xl font-semibold text-white mt-5" {...props} />
-                      ),
-                      h3: ({ ...props }) => (
-                        <h3 className="text-lg md:text-xl font-semibold text-white mt-4" {...props} />
-                      ),
-                      p: ({ ...props }) => (
-                        <p className="leading-relaxed text-white/85" {...props} />
-                      ),
-                      ul: ({ ...props }) => (
-                        <ul className="list-disc pl-5 space-y-1 marker:text-cyan-400" {...props} />
-                      ),
-                      ol: ({ ...props }) => (
-                        <ol className="list-decimal pl-5 space-y-1 marker:text-cyan-400" {...props} />
-                      ),
-                      li: ({ ...props }) => (
-                        <li className="leading-relaxed" {...props} />
-                      ),
+                      h1: (p) => <h1 className="text-2xl md:text-3xl font-bold text-white mt-6" {...p} />,
+                      h2: (p) => <h2 className="text-xl md:text-2xl font-semibold text-white mt-5" {...p} />,
+                      h3: (p) => <h3 className="text-lg md:text-xl font-semibold text-white mt-4" {...p} />,
+                      p:  (p) => <p className="leading-relaxed text-white/85" {...p} />,
+                      ul: (p) => <ul className="list-disc pl-5 space-y-1 marker:text-cyan-400" {...p} />,
+                      ol: (p) => <ol className="list-decimal pl-5 space-y-1 marker:text-cyan-400" {...p} />,
+                      li: (p) => <li className="leading-relaxed" {...p} />,
                       hr: () => <hr className="border-gray-700 my-4" />,
-                      strong: ({ ...props }) => (
-                        <strong className="text-white" {...props} />
-                      ),
+                      strong: (p) => <strong className="text-white" {...p} />,
                     }}
                   >
                     {summary}
@@ -147,16 +129,11 @@ export default function AiSummaryButton({
             </div>
 
             <style jsx>{`
-              .custom-scrollbar::-webkit-scrollbar {
-                width: 8px;
-              }
-              .custom-scrollbar::-webkit-scrollbar-track {
-                background: transparent;
-              }
+              .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+              .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
               .custom-scrollbar::-webkit-scrollbar-thumb {
                 background-color: rgba(128, 128, 128, 0.5);
-                border-radius: 4px;
-                border: 2px solid #1a1a1a;
+                border-radius: 4px; border: 2px solid #1a1a1a;
               }
               .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                 background-color: rgba(128, 128, 128, 0.7);

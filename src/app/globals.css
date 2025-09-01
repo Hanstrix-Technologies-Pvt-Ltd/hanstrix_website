@@ -430,3 +430,13 @@
 .section-spacing {
   @apply py-12 md:py-16; /* tighten globally; override per-section if needed */
 }
+
+@keyframes rail-sheen {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+.animate-rail-sheen { animation: rail-sheen 4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-rail-sheen { animation: none !important; }
+}

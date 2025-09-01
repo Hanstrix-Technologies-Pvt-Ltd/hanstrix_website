@@ -7,6 +7,7 @@ import Image from 'next/image';
 import CursorGlow from '@/components/CursorGlow';
 import DigitalGridOverlay from '@/components/DigitalGridOverlay';
 import ClientLogos from '@/components/ClientLogos';
+import Counters from '@/components/Counters';
 
 export default function Home() {
   return (
@@ -35,7 +36,9 @@ export default function Home() {
           <ClientLogos />
         </div>
         <TestimonialsSection />
+        <Counters/>
       </div>
     </main>
   );
 }
+
