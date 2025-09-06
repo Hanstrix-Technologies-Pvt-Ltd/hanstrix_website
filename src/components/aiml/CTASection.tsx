@@ -1,44 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 
-const CTASection = () => {
+export default function CTASection() {
   return (
-    <section className="relative py-15 px-5 bg-black text-white text-center overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-transparent blur-3xl" />
+    <section className="relative px-6 sm:px-12 lg:px-20 py-10 md:py-16 overflow-hidden">
+      {/* soft background glow */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_50%,rgba(0,255,255,0.10),rgba(138,43,226,0.08)_60%,transparent)]" />
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.6 }}
         viewport={{ once: true }}
-        className="relative z-10 container mx-auto"
+        className="glass-card rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 max-w-5xl mx-auto text-center"
       >
-        <h2 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Ready to Transform with AI?
+        <h2 className="text-2xl md:text-4xl font-bold text-gradient-neon">
+          Ready to accelerate with AI?
         </h2>
-        <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">
-          Partner with us to build smarter, faster, and scalable AI-driven solutions tailored to your business.
+        <p className="text-base md:text-lg text-gray-300 mt-3 max-w-3xl mx-auto">
+          Partner with Hanstrix to design, train, and deploy production-grade AI & ML
+          that drives measurable ROI across your business.
         </p>
 
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="mt-8 inline-block"
-        >
-          <Link
+        <div className="mt-6 flex items-center justify-center">
+          <a
             href="/contact"
-            className="relative px-8 py-4 text-lg font-semibold rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white shadow-lg overflow-hidden group"
+            className="btn btn--pill"
+            aria-label="Talk to our AI team"
           >
-            <span className="relative z-10">Get in Touch</span>
-            <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </Link>
-        </motion.div>
+            Talk to our AI Team
+          </a>
+        </div>
+        {/* Removed the neon horizontal line/shimmer */}
       </motion.div>
     </section>
   );
-};
-
-export default CTASection;
+}

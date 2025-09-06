@@ -1,44 +1,44 @@
 import React from 'react';
-import HeroSection from '@/components/HeroSection';
-import ServicesSection from '@/components/ServicesSection';
-import AboutSection from '@/components/AboutSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
+import HeroSection from '@/components/landing_page/HeroSection';
+import ServicesSection from '@/components/landing_page/ServicesSection';
+import AboutSection from '@/components/landing_page/AboutSection';
+import TestimonialsSection from '@/components/landing_page/TestimonialsSection';
 import Image from 'next/image';
-import CursorGlow from '@/components/CursorGlow';
-import DigitalGridOverlay from '@/components/DigitalGridOverlay';
-import ClientLogos from '@/components/ClientLogos';
-import Counters from '@/components/Counters';
+import DigitalGridOverlay from '@/components/landing_page/DigitalGridOverlay';
+import ClientLogos from '@/components/landing_page/ClientLogos';
+import Counters from '@/components/landing_page/Counters';
 
 export default function Home() {
   return (
     <main className="relative z-0">
       {/* Background for the entire Home page content */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none bg-crop-mask" aria-hidden="true">
         <Image
-          src="/images/Main_BG2.jpg"
-          alt="Main Background"
-          fill={true}
-          className="fixed object-cover"
+          src="/images/Main_BG2_Test.jpg"
+          alt="" // decorative
+          fill
+          priority
+          placeholder="empty"
+          sizes="100vw"
+          className="object-cover img-focus-bottom"
         />
       </div>
 
       {/* Overlays & Effects for the Home page only */}
-      <CursorGlow />
       <DigitalGridOverlay />
 
-      <div className="relative z-10">
+      <div className="relative">
         <HeroSection />
-        <div id='about'>
+        <div id="about">
           <AboutSection />
         </div>
         <ServicesSection />
-        <div className="relative z-10 w-full ">
-          <ClientLogos />
-        </div>
+        <ClientLogos />
         <TestimonialsSection />
-        <Counters/>
+        <Counters />
       </div>
     </main>
   );
 }
+
 

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { ShieldCheck, Gauge, Users, Zap } from "lucide-react";
-import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
 import React from "react";
 
@@ -17,9 +16,8 @@ const features: Feature[] = [
 
 export default function KeyFeatures() {
   return (
-    // tighter outer spacing + overflow hidden so nothing bleeds outside
     <section className="relative overflow-hidden px-4 sm:px-6 lg:px-16 pt-4">
-      {/* BG: removed TOP cyan glow. Kept subtle grid + a lower/center purple haze */}
+      {/* BG overlay remains full-bleed */}
       <div
         aria-hidden
         className="
@@ -28,66 +26,57 @@ export default function KeyFeatures() {
           before:[mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]
           before:bg-[linear-gradient(0deg,transparent_24%,rgba(255,255,255,0.06)_25%,rgba(255,255,255,0.06)_26%,transparent_27%),linear-gradient(90deg,transparent_24%,rgba(255,255,255,0.06)_25%,rgba(255,255,255,0.06)_26%,transparent_27%)]
           before:[background-size:22px_22px,22px_22px]
-          /* only purple-ish glow, anchored lower to avoid blue at top */
-          [background:
-            radial-gradient(55%_40%_at_60%_70%,rgba(138,43,226,0.18),transparent_65%)
-          ]
+          [background:radial-gradient(55%_40%_at_60%_70%,rgba(138,43,226,0.18),transparent_65%)]
         "
       />
 
-      <motion.h2
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        viewport={{ once: true }}
-        className="relative z-10 text-center text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon mb-4"
-      >
-        Key Features That Drive ERP
-      </motion.h2>
+      <div className="xl:mx-auto xl:max-w-[1280px]">
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          viewport={{ once: true }}
+          className="relative z-10 text-center text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon mb-4"
+        >
+          Key Features That Drive ERP
+        </motion.h2>
 
-      {/* Desktop orbit */}
-      <div className="hidden md:grid place-items-center mt-6 relative z-10">
-        <div className="relative w-[920px] max-w-full aspect-[2.1/1]">
-          {/* Center hub (no text inside; darker overlay to block any bleed-through) */}
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            viewport={{ once: true }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] rounded-full border border-white/10 overflow-hidden bg-white/[0.05] backdrop-blur-sm shadow-[0_0_60px_rgba(0,200,255,0.25),inset_0_0_50px_rgba(138,43,226,0.15)]"
-          >
-            <div className="absolute inset-0 rounded-full before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-[conic-gradient(from_0deg,rgba(0,200,255,0.45),rgba(138,43,226,0.45),rgba(0,200,255,0.45))] before:animate-[spin_14s_linear_infinite] before:opacity-60" />
-            <div className="absolute inset-2 rounded-full overflow-hidden">
-              <Image
-                src="/images/erp-features.png"
-                alt=""
-                fill
-                className="object-cover rounded-full select-none pointer-events-none"
-                sizes="260px"
-                priority
-              />
-              {/* darker to ensure *no* text shows through */}
-              <div className="absolute inset-0 rounded-full bg-black/60" />
-            </div>
-          </motion.div>
+        {/* Desktop orbit */}
+        <div className="hidden md:grid place-items-center mt-6 relative z-10">
+          <div className="relative w-[920px] max-w-full aspect-[2.1/1] mx-auto">
+            {/* Center hub */}
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.05 }}
+              viewport={{ once: true }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] rounded-full border border-white/10 overflow-hidden bg-white/[0.05] backdrop-blur-sm shadow-[0_0_60px_rgba(0,200,255,0.25),inset_0_0_50px_rgba(138,43,226,0.15)]"
+            >
+              <div className="absolute inset-0 rounded-full before:content-[''] before:absolute before:inset-0 before:rounded-full before:bg-[conic-gradient(from_0deg,rgba(0,200,255,0.45),rgba(138,43,226,0.45),rgba(0,200,255,0.45))] before:animate-[spin_14s_linear_infinite] before:opacity-60" />
+              <div className="absolute inset-2 rounded-full overflow-hidden">
+                <div className="absolute inset-0 rounded-full bg-black/60" />
+              </div>
+            </motion.div>
 
-          {/* Orbit nodes (equal-size cards) */}
-          <FeatureNode feature={features[0]} style={{ left: "8%", top: "14%" }} fromCenter="translate(150px, 80px)" delay={0.05} />
-          <FeatureNode feature={features[1]} style={{ right: "6%", top: "5%" }} fromCenter="translate(-150px, 90px)" delay={0.1} />
-          <FeatureNode feature={features[2]} style={{ left: "5%", bottom: "6%" }} fromCenter="translate(155px, -90px)" delay={0.15} />
-          <FeatureNode feature={features[3]} style={{ right: "9%", bottom: "10%" }} fromCenter="translate(-155px, -85px)" delay={0.2} />
+            {/* Orbit nodes */}
+            <FeatureNode feature={features[0]} style={{ left: "8%", top: "14%" }} fromCenter="translate(150px, 80px)" delay={0.05} />
+            <FeatureNode feature={features[1]} style={{ right: "6%", top: "5%" }} fromCenter="translate(-150px, 90px)" delay={0.1} />
+            <FeatureNode feature={features[2]} style={{ left: "5%", bottom: "6%" }} fromCenter="translate(155px, -90px)" delay={0.15} />
+            <FeatureNode feature={features[3]} style={{ right: "9%", bottom: "10%" }} fromCenter="translate(-155px, -85px)" delay={0.2} />
+          </div>
         </div>
-      </div>
 
-      {/* Mobile stack (still compact) */}
-      <div className="md:hidden mt-3 max-w-2xl mx-auto space-y-2.5 relative z-10">
-        {features.map((f, i) => (
-          <FeatureStackCard key={f.title} feature={f} delay={i * 0.04} />
-        ))}
+        {/* Mobile stack */}
+        <div className="md:hidden mt-3 max-w-2xl mx-auto space-y-2.5 relative z-10">
+          {features.map((f, i) => (
+            <FeatureStackCard key={f.title} feature={f} delay={i * 0.04} />
+          ))}
+        </div>
       </div>
     </section>
   );
 }
+
 
 /* ------- subcomponents ------- */
 

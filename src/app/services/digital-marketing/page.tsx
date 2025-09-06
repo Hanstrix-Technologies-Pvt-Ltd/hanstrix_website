@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import BackgroundEffects from "@/components/global/BackgroundEffects";
-import ClientLogos from "@/components/ClientLogos";
 
 // Sections
 import HeroSection from "@/components/digital/HeroSection";
@@ -11,7 +10,6 @@ import CTASection from "@/components/digital/CTASection";
 
 // Content
 import {
-  pageContent,
   serviceName,
 } from "@/content/digitalmarketing-page-content";
 
@@ -27,14 +25,11 @@ export default function DigitalMarketingPage() {
       <BackgroundEffects />
 
       <div className="relative z-10">
-        <HeroSection pageContent={pageContent} serviceName={serviceName} />
+        <HeroSection serviceName={serviceName} />
         <CoreServices />
         <StrategicPillars />
         <WhyEssential />
         <CTASection />
-        <div className="px-6 sm:px-12 lg:px-20 pb-10">
-          <ClientLogos />
-        </div>
       </div>
     </main>
   );

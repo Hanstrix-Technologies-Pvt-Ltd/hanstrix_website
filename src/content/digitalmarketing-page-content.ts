@@ -98,7 +98,7 @@ export const whyEssential = [
   "Gain Actionable Insights — Understand what works with clear analytics.",
 ];
 
-export const serviceName = "Digital Marketing Services";
+export const serviceName = "Digital Marketing";
 
 export const pageContent = `
 Service: ${serviceName}

@@ -25,7 +25,7 @@ const benefits: Benefit[] = [
 export default function Benefits() {
   return (
     <section className="relative px-6 lg:px-20 py-8 md:py-10">
-      {/* faint grid */}
+      {/* faint grid (stays full-bleed) */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
@@ -35,61 +35,65 @@ export default function Benefits() {
         }}
       />
 
-      <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon text-center">
-        Benefits of Working With Us
-      </h2>
+      {/* XL centering wrapper */}
+      <div className="xl:max-w-[1280px] xl:mx-auto">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon text-center">
+          Benefits of Working With Us
+        </h2>
 
-      {/* metric chips */}
-      <div className="mt-3 flex flex-wrap justify-center gap-2">
-        {["Lighthouse 95+", "TTFB < 200ms", "A11y & SEO schema", "Edge caching"].map(
-          (m) => (
-            <span
-              key={m}
-              className="px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-xs sm:text-[13px] text-white/80"
-            >
-              {m}
-            </span>
-          )
-        )}
-      </div>
-
-      {/* ---------- Zig-Zag spine (md+) ---------- */}
-      <div className="relative hidden md:block max-w-5xl mx-auto mt-8">
-        {/* vertical neon spine */}
-        <div className="pointer-events-none absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-[2px] bg-gradient-to-b from-cyan-400/40 via-white/10 to-purple-500/40" />
-
-        <div className="space-y-6">
-          {benefits.map((b, i) => {
-            const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
-            return (
-              <Row key={b.title} side={side}>
-                <BenefitCard side={side} title={b.title} Icon={b.icon} index={i} />
-              </Row>
-            );
-          })}
+        {/* metric chips */}
+        <div className="mt-3 flex flex-wrap justify-center gap-2">
+          {["Lighthouse 95+", "TTFB < 200ms", "A11y & SEO schema", "Edge caching"].map(
+            (m) => (
+              <span
+                key={m}
+                className="px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-xs sm:text-[13px] text-white/80"
+              >
+                {m}
+              </span>
+            )
+          )}
         </div>
-      </div>
 
-      {/* ---------- Mobile: compact 2-col chips ---------- */}
-      <div className="md:hidden mt-6 grid grid-cols-2 gap-2">
-        {benefits.map((b, i) => (
-          <motion.div
-            key={b.title}
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3, delay: i * 0.03 }}
-            className="relative rounded-xl border border-white/10 bg-white/[0.06] p-2.5"
-          >
-            <div className="pointer-events-none absolute left-2 right-2 -top-0.5 h-[2px] rounded-full bg-gradient-neon" />
-            <div className="flex items-start gap-2">
-              <div className="w-8 h-8 rounded-lg bg-white/6 border border-white/10 grid place-items-center shrink-0">
-                <b.icon className="w-4.5 h-4.5 text-cyan-300" />
+        {/* ---------- Zig-Zag spine (md+) ---------- */}
+        <div className="relative hidden md:block max-w-5xl mx-auto mt-8">
+          {/* vertical neon spine */}
+          <div className="pointer-events-none absolute left-1/2 top-0 bottom-0 -translate-x-1/2 w-[2px] bg-gradient-to-b from-cyan-400/40 via-white/10 to-purple-500/40" />
+
+          <div className="space-y-6">
+            {benefits.map((b, i) => {
+              const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
+              return (
+                <Row key={b.title} side={side}>
+                  <BenefitCard side={side} title={b.title} Icon={b.icon} index={i} />
+                </Row>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ---------- Mobile: compact 2-col chips ---------- */}
+        <div className="md:hidden mt-6 grid grid-cols-2 gap-2">
+          {benefits.map((b, i) => (
+            <motion.div
+              key={b.title}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: i * 0.03 }}
+              className="relative rounded-xl border border-white/10 bg-white/[0.06] p-2.5"
+            >
+              <div className="pointer-events-none absolute left-2 right-2 -top-0.5 h-[2px] rounded-full bg-gradient-neon" />
+              <div className="flex items-start gap-2">
+                <div className="w-8 h-8 rounded-lg bg-white/6 border border-white/10 grid place-items-center shrink-0">
+                  {/* FIX: Tailwind arbitrary size instead of w-4.5/h-4.5 */}
+                  <b.icon className="w-[18px] h-[18px] text-cyan-300" />
+                </div>
+                <div className="text-[12.5px] text-white/90 leading-snug">{b.title}</div>
               </div>
-              <div className="text-[12.5px] text-white/90 leading-snug">{b.title}</div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
