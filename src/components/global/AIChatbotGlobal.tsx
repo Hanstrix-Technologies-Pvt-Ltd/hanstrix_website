@@ -162,7 +162,7 @@ export default function AIChatbotGlobal() {
                   <div className="flex items-center gap-2">
                     <Bot className="w-5 h-5" />
                     <span className="font-semibold">HAI</span>
-                    <span className="ml-2 text-xs text-white/70 hidden sm:inline">Hanstrix AI</span>
+                    <span className="ml-2 text-xs text-white/70 ">Hanstrix AI</span>
                   </div>
                   <button
                     onClick={() => setOpen(false)}

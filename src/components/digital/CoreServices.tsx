@@ -47,7 +47,7 @@ export default function CoreServices() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
           viewport={{ once: true }}
-          className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon text-center mb-10 md:mb-12"
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon text-center mb-10 md:mb-12"
         >Core Digital Marketing Solutions
         </motion.h2>
 

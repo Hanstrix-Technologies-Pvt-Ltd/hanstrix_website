@@ -42,7 +42,7 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           viewport={{ once: true, margin: "-50px" }}
-          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon mb-5 sm:mb-6 text-center"
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon mb-5 sm:mb-6 text-center"
         >
           ERP That Fits Your Operations
         </motion.h2>

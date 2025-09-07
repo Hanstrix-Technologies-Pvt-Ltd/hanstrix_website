@@ -96,7 +96,7 @@ const ClientLogos: React.FC = () => {
     <section aria-label="Client logos" className="py-0 my-0 ">
       <div className="container mx-auto max-w-7xl container-gutters">
         <div className="text-center md:pt-5 pb-4">
-        <h1 className="text-3xl md:text-5xl font-bold text-gradient-neon mb-3 sm:mb-4">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon mb-3 sm:mb-4">
           Our Clients
         </h1>
         </div>

@@ -36,7 +36,7 @@ export default function KeyFeatures() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
           viewport={{ once: true }}
-          className="relative z-10 text-center text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon mb-4"
+          className="text-3xl md:text-4xl lg:text-5xl relative z-10 text-center font-bold text-gradient-neon mb-4"
         >
           Key Features That Drive ERP
         </motion.h2>

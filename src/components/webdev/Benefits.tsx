@@ -37,7 +37,7 @@ export default function Benefits() {
 
       {/* XL centering wrapper */}
       <div className="xl:max-w-[1280px] xl:mx-auto">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon text-center">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon text-center">
           Benefits of Working With Us
         </h2>
 

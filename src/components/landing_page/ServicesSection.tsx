@@ -28,7 +28,7 @@ const ServicesSection = () => {
     // Default rhythm + tighter top, and remove bottom padding
     <section id="services" className="relative section-spacing section-spacing--tight-top !pb-13">
       <div className="relative z-10 container mx-auto max-w-7xl container-gutters">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-gradient-neon mb-6 sm:mb-8 lg:mb-10">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-gradient-neon mb-6 sm:mb-8 lg:mb-10">
           Our Services
         </h2>
 

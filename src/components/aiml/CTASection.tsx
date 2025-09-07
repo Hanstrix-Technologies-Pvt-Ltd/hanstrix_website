@@ -15,7 +15,7 @@ export default function CTASection() {
         viewport={{ once: true }}
         className="glass-card rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 max-w-5xl mx-auto text-center"
       >
-        <h2 className="text-2xl md:text-4xl font-bold text-gradient-neon">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon">
           Ready to accelerate with AI?
         </h2>
         <p className="text-base md:text-lg text-gray-300 mt-3 max-w-3xl mx-auto">

@@ -86,7 +86,7 @@ export default function Process() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55 }}
           viewport={{ once: true }}
-          className="text-2xl md:text-3xl lg:text-4xl font-bold text-gradient-neon text-center mb-6"
+          className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon text-center mb-6"
         >
           From Brief to Production — Our Build Flow
         </motion.h2>

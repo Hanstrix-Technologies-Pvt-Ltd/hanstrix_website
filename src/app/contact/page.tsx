@@ -25,16 +25,16 @@ const ContactPage = () => {
 
 
       <div className="min-h-screen w-full bg-transparent text-foreground relative font-sans">
-        <CanvasBackground />  {/* replaces <VantaBackground /> */}
+        <CanvasBackground />
         <motion.div
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.8, ease: "easeInOut" }}
-  className="relative z-10 w-full px-4 sm:px-6 lg:px-8 py-24 sm:py-28"
+  className="section-spacing relative container container-gutters"
 >
   {/* Heading */}
-  <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-10 pt-2 sm:pt-0">
-    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gradient-neon leading-tight mb-3 sm:mb-4">
+  <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
+    <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gradient-neon leading-tight mb-3 sm:mb-4">
       Connect with the Future
     </h1>
     <p className="text-base sm:text-lg md:text-xl text-white max-w-2xl mx-auto">
