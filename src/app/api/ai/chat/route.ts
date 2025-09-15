@@ -12,7 +12,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export const runtime = "nodejs";
 
 const apiKey = process.env.GEMINI_API_KEY;
-const MODEL_ID = "gemini-1.5-flash-latest";
+const MODEL_ID = "gemini-2.5-flash";
 
 // Initialize genAI only if apiKey is available
 let genAI: GoogleGenerativeAI | null = null;

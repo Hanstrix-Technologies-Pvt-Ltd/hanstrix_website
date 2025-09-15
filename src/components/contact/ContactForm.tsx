@@ -3,7 +3,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, AlertCircle, ChevronDown, Sparkles, Wand, Zap } from "lucide-react";
+import { Send, AlertCircle, ChevronDown, Sparkles, Wand, Zap, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   usePhoneInput,
@@ -15,7 +15,7 @@ import {
 import "react-international-phone/style.css";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
-/* body portal for the dropdown */
+/* body portal for overlays */
 function Portal({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -35,6 +35,17 @@ export const ContactForm: React.FC = () => {
   const [loading, setLoading] = useState({ submit: false, generate: false });
   const [phoneError, setPhoneError] = useState("");
   const [generationStatus, setGenerationStatus] = useState("");
+  const [cooldown, setCooldown] = useState<number | null>(null);
+
+useEffect(() => {
+  if (cooldown == null) return;
+  if (cooldown <= 0) { setCooldown(null); return; }
+  const id = setTimeout(() => setCooldown((s) => (s ?? 1) - 1), 1000);
+  return () => clearTimeout(id);
+}, [cooldown]);
+
+  /* success modal */
+  const [showThanks, setShowThanks] = useState(false);
 
   /* phone input */
   const { inputValue, handlePhoneValueChange, inputRef, country, setCountry, phone } =
@@ -59,7 +70,7 @@ export const ContactForm: React.FC = () => {
     if (!btn) return;
     const r = btn.getBoundingClientRect();
     const gutter = 12;
-    const width = Math.min(window.innerWidth - gutter * 2, 352); // ≤ 22rem
+    const width = Math.min(window.innerWidth - gutter * 2, 352);
     const maxH = Math.min(360, window.innerHeight - r.bottom - gutter) || 280;
     let left = r.right - width;
     if (left < gutter) left = gutter;
@@ -111,43 +122,52 @@ export const ContactForm: React.FC = () => {
     setFormData((p) => ({ ...p, [name]: value }));
   };
 
-  /* AI generate (fills subject + message; prompt not sent to backend later) */
-  const handleGenerate = async () => {
-    if (!formData.requirementsPrompt.trim()) {
-      toast.error("Please enter your requirements first.");
-      return;
-    }
-    setLoading((p) => ({ ...p, generate: true }));
-    setGenerationStatus("AI is drafting your subject and message…");
-    try {
-      const [messageRes, subjectRes] = await Promise.all([
-        fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: formData.requirementsPrompt, action: "generateMessage" }),
-        }).then((r) => r.json()),
-        fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: formData.requirementsPrompt, action: "suggestSubject" }),
-        }).then((r) => r.json()),
-      ]);
-      setFormData((p) => ({
-        ...p,
-        message: messageRes?.result || p.message,
-        subject: subjectRes?.result || p.subject,
-      }));
-      setGenerationStatus("Draft ready! You can edit before sending.");
-      toast.success("AI draft generated!");
-    } catch {
-      setGenerationStatus("Failed to generate AI draft.");
-      toast.error("AI generation failed.");
-    } finally {
-      setLoading((p) => ({ ...p, generate: false }));
-    }
-  };
+type DraftResp = { result?: { subject?: string; message?: string }; error?: string };
 
-  /* submit – payload trimmed to what you wanted */
+const handleGenerate = async (): Promise<void> => {
+  const brief = formData.requirementsPrompt.trim();
+  if (!brief) {
+    toast.error("Please enter your requirements first.");
+    return;
+  }
+  setLoading((p) => ({ ...p, generate: true }));
+  setGenerationStatus("AI is drafting your subject and message…");
+
+  try {
+    const r = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: brief }),
+    });
+    const data: DraftResp = await r.json();
+
+    if (!r.ok || data.error) {
+      throw new Error(data.error || "Failed to generate AI draft.");
+    }
+
+    const subject = data.result?.subject?.trim() ?? "";
+    const message = data.result?.message?.trim() ?? "";
+
+    setFormData((p) => ({
+      ...p,
+      subject: subject || p.subject,
+      message: message || p.message,
+    }));
+
+    setGenerationStatus("Draft ready! You can edit before sending.");
+    toast.success("AI draft generated!");
+    setCooldown(15); // 15s local cooldown between generations
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "AI generation failed.";
+    setGenerationStatus("Failed to generate AI draft.");
+    toast.error(msg);
+  } finally {
+    setLoading((p) => ({ ...p, generate: false }));
+  }
+};
+
+
+  /* submit (unchanged) */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (phone && !isValidPhoneNumber(phone)) {
@@ -156,31 +176,27 @@ export const ContactForm: React.FC = () => {
       return;
     }
     setLoading((p) => ({ ...p, submit: true }));
-    const toastId = toast.loading("Sending your message...");
     try {
       const payload = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        subject: formData.subject,
-        message: formData.message,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
       };
       const r = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result: { message?: string; errors?: Record<string, string> } = await r.json();
-      if (!r.ok) {
-        const msg = result.errors ? Object.values(result.errors).join(", ") : result.message;
-        throw new Error(msg || "Failed to send message.");
-      }
-      toast.success(result.message || "Message sent!", { id: toastId });
+      const result: { message?: string } = await r.json();
+      if (!r.ok) throw new Error(result?.message || "Failed to send message.");
+      setShowThanks(true);
       setFormData({ name: "", email: "", subject: "", message: "", phone: "", requirementsPrompt: "" });
       setPhoneError("");
       setGenerationStatus("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Unknown error", { id: toastId });
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading((p) => ({ ...p, submit: false }));
     }
@@ -210,120 +226,121 @@ export const ContactForm: React.FC = () => {
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name */}
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-white mb-1.5">Name</label>
-        <input id="name" name="name" value={formData.name} onChange={handleChange} className={inputClasses} placeholder="Your Name" required />
-      </div>
-
-      {/* Email */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-white mb-1.5">Email</label>
-        <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} className={inputClasses} placeholder="your@example.com" required />
-      </div>
-
-      {/* Phone */}
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-white mb-1.5">Phone Number</label>
-        <div ref={phoneWrapRef} onBlurCapture={handlePhoneBlurCapture}>
-          <div className="rip-input">
-            <div className="rip-btn">
-              <button
-                ref={triggerRef}
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                aria-label="Choose country"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <FlagImage iso2={country.iso2} className="rip-flag" />
-                <span className="text-white/90 text-sm leading-none">+{country.dialCode}</span>
-                <ChevronDown className="phone-chevron" />
-              </button>
-            </div>
-
-            <input
-              id="phone"
-              ref={inputRef}
-              value={inputValue}
-              onChange={handlePhoneValueChange}
-              onKeyDown={(ev) => {
-                if (ev.key.length === 1 && /[A-Za-z]/.test(ev.key) && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
-                  ev.preventDefault();
-                }
-              }}
-              className="flex-1 min-w-0 bg-transparent border-0 outline-none text-white placeholder-gray-400 text-sm sm:text-base"
-              placeholder="Enter phone number"
-              inputMode="tel"
-              autoComplete="tel"
-            />
-          </div>
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-white mb-1.5">Name</label>
+          <input id="name" name="name" value={formData.name} onChange={handleChange} className={inputClasses} placeholder="Your Name" required />
         </div>
 
-        {/* portal dropdown */}
-        <AnimatePresence>
-          {open && (
-            <Portal>
-              <motion.div
-                id="country-menu-portal"
-                initial={{ opacity: 0, y: -4 }}
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-white mb-1.5">Email</label>
+          <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} className={inputClasses} placeholder="your@example.com" required />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-white mb-1.5">Phone Number</label>
+          <div ref={phoneWrapRef} onBlurCapture={handlePhoneBlurCapture}>
+            <div className="rip-input">
+              <div className="rip-btn">
+                <button
+                  ref={triggerRef}
+                  type="button"
+                  onClick={() => setOpen((v) => !v)}
+                  aria-label="Choose country"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <FlagImage iso2={country.iso2} className="rip-flag" />
+                  <span className="text-white/90 text-sm leading-none">+{country.dialCode}</span>
+                  <ChevronDown className="phone-chevron" />
+                </button>
+              </div>
+
+              <input
+                id="phone"
+                ref={inputRef}
+                value={inputValue}
+                onChange={handlePhoneValueChange}
+                onKeyDown={(ev) => {
+                  if (ev.key.length === 1 && /[A-Za-z]/.test(ev.key) && !ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+                    ev.preventDefault();
+                  }
+                }}
+                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-white placeholder-gray-400 text-sm sm:text-base"
+                placeholder="Enter phone number"
+                inputMode="tel"
+                autoComplete="tel"
+              />
+            </div>
+          </div>
+
+          {/* Country portal */}
+          <AnimatePresence>
+            {open && (
+              <Portal>
+                <motion.div
+                  id="country-menu-portal"
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  style={menuStyle}
+                  className="rip-dd custom-scrollbar"
+                >
+                  <div className="p-2 border-b border-slate-700 bg-slate-900 sticky top-0">
+                    <input
+                      aria-label="Search country"
+                      className="rip-search w-full rounded-md px-2.5 py-2 outline-none"
+                      placeholder="Search country or dial code…"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </div>
+                  <ul className="py-1">
+                    {filtered.map((c) => {
+                      const selected = c.iso2 === country.iso2;
+                      return (
+                        <li key={c.iso2}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCountry(c.iso2 as CountryIso2);
+                              setOpen(false);
+                              setQuery("");
+                            }}
+                            className={`rip-item ${selected ? "bg-slate-800/70" : ""}`}
+                          >
+                            <FlagImage iso2={c.iso2} style={{ width: 18, height: 14 }} />
+                            <span className="flex-1 text-sm text-white/90">{c.name}</span>
+                            <span className="text-xs text-white/60">+{c.dialCode}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </motion.div>
+              </Portal>
+            )}
+          </AnimatePresence>
+
+          {/* phone error */}
+          <AnimatePresence>
+            {phoneError && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                style={menuStyle}
-                className="rip-dd custom-scrollbar"
+                exit={{ opacity: 0, y: -10 }}
+                className="text-sm text-red-400 mt-2 flex items-center gap-2"
               >
-                <div className="p-2 border-b border-slate-700 bg-slate-900 sticky top-0">
-                  <input
-                    aria-label="Search country"
-                    className="rip-search w-full rounded-md px-2.5 py-2 outline-none"
-                    placeholder="Search country or dial code…"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
-                <ul className="py-1">
-                  {filtered.map((c) => {
-                    const selected = c.iso2 === country.iso2;
-                    return (
-                      <li key={c.iso2}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCountry(c.iso2 as CountryIso2);
-                            setOpen(false);
-                            setQuery("");
-                          }}
-                          className={`rip-item ${selected ? "bg-slate-800/70" : ""}`}
-                        >
-                          <FlagImage iso2={c.iso2} style={{ width: 18, height: 14 }} />
-                          <span className="flex-1 text-sm text-white/90">{c.name}</span>
-                          <span className="text-xs text-white/60">+{c.dialCode}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </motion.div>
-            </Portal>
-          )}
-        </AnimatePresence>
+                <AlertCircle size={16} /> {phoneError}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
 
-        {/* phone error */}
-        <AnimatePresence>
-          {phoneError && (
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-red-400 mt-2 flex items-center gap-2"
-            >
-              <AlertCircle size={16} /> {phoneError}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Requirements prompt + AI button */}
+        {/* Requirements + AI (BUTTON CHANGED slightly to show cooldown) */}
       <div>
         <label htmlFor="requirementsPrompt" className="block text-sm font-medium text-white mb-1.5">
           What can we help you with?
@@ -341,18 +358,27 @@ export const ContactForm: React.FC = () => {
           <button
             type="button"
             onClick={handleGenerate}
-            disabled={loading.generate}
+            disabled={loading.generate || cooldown !== null}
             className="btn btn--sm sm:btn--lg"
+            title={cooldown ? `Please wait ${cooldown}s` : undefined}
           >
-            {loading.generate ? (<><Wand size={16} className="animate-spin" /> Generating…</>) : (<><Sparkles size={16} /> Generate Message</>)}
+            {cooldown !== null
+              ? `Wait ${cooldown}s`
+              : loading.generate
+                ? (<><Wand size={16} className="animate-spin" /> Generating…</>)
+                : (<><Sparkles size={16} /> Generate Message</>)
+            }
           </button>
+
         </div>
         <AnimatePresence>
           {generationStatus && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`text-sm mt-1 flex items-center gap-2 ${generationStatus.includes("Failed") ? "text-red-400" : "text-green-400"}`}
+              className={`text-sm mt-1 flex items-center gap-2 ${
+                generationStatus.toLowerCase().includes("failed") ? "text-red-400" : "text-green-400"
+              }`}
             >
               <Zap size={16} /> {generationStatus}
             </motion.p>
@@ -360,21 +386,84 @@ export const ContactForm: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      {/* Subject */}
-      <div>
-        <label htmlFor="subject" className="block text-sm font-medium text-white mb-1.5">Subject</label>
-        <input id="subject" name="subject" value={formData.subject} onChange={handleChange} className={inputClasses} placeholder="AI generated or enter subject…" required />
-      </div>
+        {/* Subject */}
+        <div>
+          <label htmlFor="subject" className="block text-sm font-medium text-white mb-1.5">Subject</label>
+          <input id="subject" name="subject" value={formData.subject} onChange={handleChange} className={inputClasses} placeholder="AI generated or enter subject…" required />
+        </div>
 
-      {/* Message */}
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-white mb-1.5">Your Message</label>
-        <textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={5} className={inputClasses} placeholder="AI generated or enter your message…" required />
-      </div>
+        {/* Message */}
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-white mb-1.5">Your Message</label>
+          <textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={5} className={inputClasses} placeholder="AI generated or enter your message…" required />
+        </div>
 
-      <button type="submit" disabled={loading.submit} className="btn w-full">
-        {loading.submit ? "Submitting…" : (<><Send size={20} /> Send Message</>)}
-      </button>
-    </form>
+        <button type="submit" disabled={loading.submit} className="btn w-full">
+          {loading.submit ? "Submitting…" : (<><Send size={20} /> Send Message</>)}
+        </button>
+      </form>
+
+      {/* Submitting overlay */}
+      <Portal>
+        <AnimatePresence>
+          {loading.submit && (
+            <motion.div
+              className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-[2px] grid place-items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                initial={{ scale: 0.96, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.96, opacity: 0 }}
+                className="glass-card border border-white/10 rounded-2xl px-6 py-5 text-center"
+              >
+                <div className="mx-auto mb-3 h-10 w-10 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                <div className="text-white font-semibold">Sending your message…</div>
+                <div className="text-white/70 text-sm mt-1">Please don’t close this window.</div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Portal>
+
+      {/* Thank-you modal */}
+      <Portal>
+        <AnimatePresence>
+          {showThanks && (
+            <motion.div
+              className="fixed inset-0 z-[1001] bg-black/70 backdrop-blur-[2px] grid place-items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowThanks(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.92, opacity: 0, y: 8 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.96, opacity: 0, y: -8 }}
+                className="glass-card border border-white/10 rounded-3xl px-8 py-7 text-center max-w-md mx-auto relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="mx-auto mb-3 h-16 w-16 rounded-full grid place-items-center bg-emerald-500/20 border border-emerald-400/30">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-300" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Thank you!</h3>
+                <p className="text-white/80 mt-2">
+                  We’ve received your message. A confirmation has been emailed to you and our team will respond shortly.
+                </p>
+                <button
+                  onClick={() => setShowThanks(false)}
+                  className="mt-5 btn btn--pill"
+                >
+                  Close
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Portal>
+    </>
   );
 };

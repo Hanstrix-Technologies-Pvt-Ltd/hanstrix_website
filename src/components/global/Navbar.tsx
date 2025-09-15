@@ -70,10 +70,10 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-white flex items-center">
           <Image
-            src="/images/logo_gpt1.png"
+            src="/images/logo.png"
             alt="Hanstrix Technologies Logo"
             width={180}
-            height={40}
+            height={10}
             className="object-contain"
             priority
           />
