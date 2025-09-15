@@ -7,23 +7,18 @@ import nodemailer from "nodemailer";
 
 /** ===== Brand / contact ===== */
 const COMPANY_NAME = "Hanstrix Technologies";
-const SITE_URL = "https://hanstrix.com";
-const TEAM_INBOX = "info@hanstrix.com";          // where your team receives
-const SUPPORT_PHONE_LABEL = "+91 98765 43210";
-const SUPPORT_PHONE_TEL   = SUPPORT_PHONE_LABEL.replace(/[^\d+]/g, ""); // -> +919876543210
+const SITE_URL = "https://hanstrixtechnologies.com";
+const TEAM_INBOX = "info@hanstrix.com";
+const SUPPORT_PHONE_LABEL = "+91 97043 28648";
+const SUPPORT_PHONE_TEL = SUPPORT_PHONE_LABEL.replace(/[^\d+]/g, "");
 
-/** ===== SMTP sender (use a different address to avoid “Me”) =====
- * Prefer creating mailbox: notifications@hanstrix.com (Zoho app password)
- * Or add alias in Zoho and allow 'Send Mail As'.
- */
-const FROM_EMAIL = "contact@hanstrix.com"; // <- NOT the same as TEAM_INBOX
-
-/** ===== Zoho SMTP (India) ===== */
+/** ===== SMTP (Zoho India) ===== */
+const FROM_EMAIL = "info@hanstrix.com";
 const SMTP_HOST = "smtp.zoho.in";
 const SMTP_PORT = 465;
 const SMTP_SECURE = true;
-const SMTP_USER = FROM_EMAIL;             // login as the sender mailbox
-const SMTP_PASS = "UFMUMCUjesg7"; // replace with your Zoho app password
+const SMTP_USER = FROM_EMAIL;
+const SMTP_PASS = "UFMUMCUjesg7"; // your Zoho app password
 
 type Payload = {
   name: string;
@@ -40,13 +35,17 @@ const transporter = nodemailer.createTransport({
   auth: { user: SMTP_USER, pass: SMTP_PASS },
 });
 
+/* ---------- validation ---------- */
 type FieldErrors = Record<string, string>;
 function validate(p: Partial<Payload>): { ok: boolean; errors?: FieldErrors } {
   const errors: FieldErrors = {};
   if (!p.name || p.name.trim().length < 2) errors.name = "Name is required";
-  if (!p.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) errors.email = "Valid email required";
-  if (!p.subject || p.subject.trim().length < 2) errors.subject = "Subject required";
-  if (!p.message || p.message.trim().length < 5) errors.message = "Message too short";
+  if (!p.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email))
+    errors.email = "Valid email required";
+  if (!p.subject || p.subject.trim().length < 2)
+    errors.subject = "Subject required";
+  if (!p.message || p.message.trim().length < 5)
+    errors.message = "Message too short";
   return { ok: Object.keys(errors).length === 0, errors };
 }
 
@@ -58,98 +57,166 @@ const UI = {
   text: "#e5e7eb",
   sub: "#a5b4fc",
   link: "#22d3ee",
-  border: "#1f2937",
-  accent: "#67e8f9",
+  line: "#1f2937",
+  brand: "#67e8f9",
+  btnL: "#06b6d4",
+  btnR: "#8b5cf6",
 };
+
+const siteHost = SITE_URL.replace(/^https?:\/\//, "");
 
 const pre = (t: string) =>
   `<div style="display:none!important;opacity:0;color:transparent;height:0;width:0;overflow:hidden;mso-hide:all;visibility:hidden;">${t}</div>`;
 
 const escapeHtml = (s: string) =>
-  s.replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]!));
-const nl2br = (s: string) => s.replace(/\n/g, "<br/>");
+  s.replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]!));
+
 const firstName = (n: string) => (n || "").trim().split(/\s+/)[0] || "there";
 
-const wrap = (title: string, preheader: string, inner: string) => `<!doctype html>
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>${title}</title>
-<style>
-  body{margin:0;background:${UI.bg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,'Helvetica Neue',sans-serif}
-  a{color:${UI.link};text-decoration:none}
-  .container{padding:24px 12px}
-  .card{max-width:600px;margin:0 auto;background:${UI.card};border:1px solid ${UI.border};border-radius:14px;overflow:hidden}
-  .header{padding:18px 24px;border-bottom:1px solid ${UI.border};display:flex;align-items:center;gap:12px}
-  .brand{font-weight:800;color:${UI.accent};font-size:18px}
-  .pad{padding:24px}
-  .title{font-size:22px;font-weight:800;color:${UI.accent};margin:0 0 6px 0}
-  .muted{color:${UI.sub};font-size:14px}
-  .row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid ${UI.border}}
-  .row:last-child{border-bottom:none}
-  .label{width:120px;color:#94a3b8;font-size:14px}
-  .value{color:${UI.text};font-size:15px;word-break:break-word}
-  .cta{padding:22px;text-align:center;border-top:1px solid ${UI.border};background:rgba(255,255,255,.02)}
-  .btn{display:inline-block;background:linear-gradient(90deg,#06b6d4,#8b5cf6);color:#fff;font-weight:700;padding:12px 18px;border-radius:999px}
-  .footer{color:#9ca3af;font-size:12px;text-align:center;margin-top:16px}
-</style>
-</head>
-<body>
-${pre(preheader)}
-<div class="container">
-  <div class="card">
-    <div class="header">
-      <!-- If you have a logo URL, put an <img> here -->
-      <div class="brand">${COMPANY_NAME}</div>
-    </div>
-    ${inner}
-  </div>
-  <div class="footer">© ${new Date().getFullYear()} ${COMPANY_NAME} • <a href="${SITE_URL}">${SITE_URL.replace(/^https?:\/\//,"")}</a></div>
-</div>
-</body></html>`;
-
-function adminHtml(p: Payload) {
-  const preheader = `New contact from ${p.name} — ${p.subject}`;
-  const inner = `
-  <div class="pad">
-    <h1 class="title">New Message</h1>
-    <div class="muted">You received a new message from your website contact form.</div>
-
-    <div class="row"><div class="label">Name</div><div class="value">${escapeHtml(p.name)}</div></div>
-    <div class="row"><div class="label">Email</div><div class="value"><a href="mailto:${p.email}">${p.email}</a></div></div>
-    <div class="row"><div class="label">Phone</div><div class="value">${p.phone ? `<a href="tel:${p.phone}">${p.phone}</a>` : "—"}</div></div>
-    <div class="row"><div class="label">Subject</div><div class="value">${escapeHtml(p.subject)}</div></div>
-    <div class="row"><div class="label">Message</div><div class="value">${nl2br(escapeHtml(p.message))}</div></div>
-  </div>
-  <div class="cta">
-    <a class="btn" href="mailto:${encodeURIComponent(p.email)}?subject=${encodeURIComponent("Re: "+p.subject)}">Reply to ${escapeHtml(p.name)}</a>
-    <div class="muted" style="margin-top:10px">Or call <a href="tel:${SUPPORT_PHONE_TEL}">${SUPPORT_PHONE_LABEL}</a></div>
-  </div>`;
-  return wrap(`${COMPANY_NAME} — New Message`, preheader, inner);
+function formatMessageHTML(message: string): string {
+  const safe = escapeHtml(message).trim();
+  if (!safe) return "—";
+  const lines = safe.split(/\r?\n/);
+  const html = lines
+    .map((ln) => {
+      if (/^\s*([*-]|\d+\.)\s+/.test(ln)) {
+        return `<div>• ${ln.replace(/^\s*([*-]|\d+\.)\s+/, "")}</div>`;
+      }
+      return `<p style="margin:0 0 10px 0">${ln || "&nbsp;"}</p>`;
+    })
+    .join("");
+  return html;
 }
 
+/** Outlook-safe gradient button */
+function ctaButton(href: string, label: string) {
+  const l = escapeHtml(label);
+  return `
+  <!--[if mso]>
+  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="${href}" arcsize="50%" stroke="f" fillcolor="${UI.btnL}" style="height:44px;v-text-anchor:middle;width:280px;">
+    <v:fill type="gradient" color="${UI.btnL}" color2="${UI.btnR}" />
+    <w:anchorlock/>
+    <center style="color:#ffffff;font-family:Segoe UI,Arial,sans-serif;font-size:16px;font-weight:700;">${l}</center>
+  </v:roundrect>
+  <![endif]-->
+  <!--[if !mso]><!-- -->
+  <a href="${href}"
+     style="display:inline-block;padding:12px 20px;border-radius:999px;background-image:linear-gradient(90deg,${UI.btnL},${UI.btnR});color:#ffffff !important;font-weight:700;font-size:16px;text-decoration:none;">
+    ${l}
+  </a>
+  <!--<![endif]-->`;
+}
+
+/** Responsive wrapper:
+ *  - Desktop: two-column label/value
+ *  - Mobile: stacks label above value (no wasted space)
+ */
+function wrap(title: string, preheader: string, inner: string) {
+  return `<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>${escapeHtml(title)}</title>
+<style>
+  body{margin:0;background:${UI.bg};-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  a{color:${UI.link};text-decoration:underline}
+  .container{padding:20px 12px}
+  .card{max-width:640px;margin:0 auto;background:${UI.card};border-radius:16px;overflow:hidden;border:1px solid ${UI.line}}
+  .header{padding:18px 20px;border-bottom:1px solid ${UI.line}}
+  .brand{font:800 18px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,'Helvetica Neue',sans-serif;color:${UI.brand}}
+  .pad{padding:18px 20px}
+  .rowline{height:1px;background:${UI.line};opacity:.6;margin:6px 0}
+  .kv-label{width:150px;color:#94a3b8;font-size:14px;vertical-align:top;padding:12px 0}
+  .kv-value{color:${UI.text};font-size:15px;line-height:1.55;padding:12px 0}
+  .footer{color:#9ca3af;font:400 12px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,'Helvetica Neue',sans-serif;text-align:center;margin:12px 0 0}
+  @media only screen and (max-width:480px){
+    .pad{padding:16px 14px}
+    .header{padding:16px 14px}
+    .kv-label,.kv-value{display:block !important; width:100% !important; padding:10px 0 4px 0 !important}
+    .kv-value{padding:0 0 12px 0 !important}
+    .rowline{margin:10px 0 !important}
+  }
+</style>
+</head>
+<body style="background:${UI.bg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,'Helvetica Neue',sans-serif;color:${UI.text}">
+${pre(preheader)}
+  <div class="container">
+    <div class="card">
+      <div class="header"><div class="brand">${COMPANY_NAME}</div></div>
+      <div class="pad">
+        ${inner}
+      </div>
+    </div>
+    <div class="footer">© ${new Date().getFullYear()} ${COMPANY_NAME} • <a href="${SITE_URL}" style="color:${UI.link}">${siteHost}</a></div>
+  </div>
+</body>
+</html>`;
+}
+
+/** One responsive “row”: label + value + subtle separator */
+function row(label: string, valueHTML: string) {
+  return `
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+      <td class="kv-label">${escapeHtml(label)}</td>
+      <td class="kv-value">${valueHTML}</td>
+    </tr>
+  </table>
+  <div class="rowline"></div>`;
+}
+
+/** --- Admin email --- */
+function adminHtml(p: Payload) {
+  const preheader = `New contact from ${p.name} — ${p.subject}`;
+  const replyHref = `mailto:${p.email}?subject=${encodeURIComponent("Re: " + p.subject)}`;
+
+  const inner = `
+    <h1 style="margin:0 0 8px 0;font-size:22px;line-height:1.25;color:${UI.brand};font-weight:800">New Message</h1>
+    <p style="margin:0 0 14px 0;color:${UI.sub};font-size:14px">You received a new message from your website contact form.</p>
+
+    ${row("Name", escapeHtml(p.name))}
+    ${row("Email", `<a href="mailto:${p.email}" style="color:${UI.link};text-decoration:underline">${p.email}</a>`)}
+    ${row("Phone", p.phone
+        ? `<a href="tel:${p.phone.replace(/[^\d+]/g,"")}" style="color:${UI.link};text-decoration:underline">${escapeHtml(p.phone)}</a>`
+        : "—")}
+    ${row("Subject", escapeHtml(p.subject))}
+    ${row("Message", formatMessageHTML(p.message))}
+
+    <div style="margin:10px 0 0 0;color:${UI.sub};font-size:14px">Quick actions:</div>
+    <div style="margin:8px 0 0 0">${ctaButton(replyHref, `Reply to ${escapeHtml(p.name)}`)}</div>
+    <div style="margin-top:10px;color:${UI.sub};font-size:13px">
+      or call <a href="tel:${SUPPORT_PHONE_TEL}" style="color:${UI.link};text-decoration:underline">${SUPPORT_PHONE_LABEL}</a>
+    </div>
+  `;
+  return wrap(`New message — ${p.subject}`, preheader, inner);
+}
+
+/** --- User email --- */
 function userHtml(p: Payload) {
   const preheader = `Thanks ${firstName(p.name)} — we received your message`;
+
   const inner = `
-  <div class="pad">
-    <h1 class="title">Thanks for Contacting Us</h1>
-    <div class="muted">Hi ${escapeHtml(firstName(p.name))}, we’ve received your message.</div>
+    <h1 style="margin:0 0 8px 0;font-size:22px;line-height:1.25;color:${UI.brand};font-weight:800">Thanks for Contacting Us</h1>
+    <p style="margin:0 0 14px 0;color:${UI.sub};font-size:14px">Hi ${escapeHtml(firstName(p.name))}, we’ve received your message.</p>
 
-    <div class="row"><div class="label">Subject</div><div class="value">${escapeHtml(p.subject)}</div></div>
-    <div class="row"><div class="label">Your message</div><div class="value">${nl2br(escapeHtml(p.message))}</div></div>
+    ${row("Subject", escapeHtml(p.subject))}
+    ${row("Your message", formatMessageHTML(p.message))}
 
-    <div class="muted" style="margin-top:14px">
+    <p style="margin:12px 0 16px 0;color:${UI.sub};font-size:14px">
       Need something urgent? Reply to this email or call us at
-      <a href="tel:${SUPPORT_PHONE_TEL}">${SUPPORT_PHONE_LABEL}</a>.  
-      You can also email <a href="mailto:${TEAM_INBOX}">${TEAM_INBOX}</a>.
+      <a href="tel:${SUPPORT_PHONE_TEL}" style="color:${UI.link};text-decoration:underline">${SUPPORT_PHONE_LABEL}</a>.
+      You can also email <a href="mailto:${TEAM_INBOX}" style="color:${UI.link};text-decoration:underline">${TEAM_INBOX}</a>.
+    </p>
+
+    <div style="text-align:center;margin:8px 0 0 0;">
+      ${ctaButton(SITE_URL, "Visit Hanstrix Technologies")}
     </div>
-  </div>
-  <div class="cta">
-    <a class="btn " href="${SITE_URL}" style="display:inline-block;color:#ffffff !important;text-decoration:none !important;">Visit ${COMPANY_NAME}</a>
-  </div>`;
+  `;
   return wrap(`Thanks for contacting ${COMPANY_NAME}`, preheader, inner);
 }
 
+/** --- Plain text fallbacks --- */
 function adminText(p: Payload) {
   return `${COMPANY_NAME} — New Contact
 Name: ${p.name}
@@ -175,11 +242,10 @@ ${SITE_URL}
 `;
 }
 
-/* ---------- handler ---------- */
-
+/* ---------- route handler ---------- */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as Partial<Payload>;
     const payload: Payload = {
       name: String(body.name || ""),
       email: String(body.email || ""),
@@ -190,24 +256,27 @@ export async function POST(req: NextRequest) {
 
     const v = validate(payload);
     if (!v.ok) {
-      return NextResponse.json({ message: "Validation failed", errors: v.errors }, { status: 400 });
+      return NextResponse.json(
+        { message: "Validation failed", errors: v.errors },
+        { status: 400 }
+      );
     }
 
-    // 1) to your team inbox (FROM is notifications@… to avoid "Me")
+    // Admin notification (from shows “User Name via Hanstrix”)
     await transporter.sendMail({
-      from: `"${payload.name} via Hanstrix" <contact@hanstrix.com>`,
+      from: `"${payload.name} via Hanstrix" <${FROM_EMAIL}>`,
       to: TEAM_INBOX,
-      replyTo: payload.email, // reply answers the visitor
+      replyTo: payload.email,
       subject: `New Message — ${payload.subject}`.slice(0, 180),
       html: adminHtml(payload),
       text: adminText(payload),
     });
 
-    // 2) auto-reply to the visitor
+    // Auto-reply to visitor
     await transporter.sendMail({
       from: `${COMPANY_NAME} <${TEAM_INBOX}>`,
       to: payload.email,
-      replyTo: TEAM_INBOX, // if they reply, it goes to your inbox
+      replyTo: TEAM_INBOX,
       subject: `Thanks for contacting ${COMPANY_NAME}`,
       html: userHtml(payload),
       text: userText(payload),

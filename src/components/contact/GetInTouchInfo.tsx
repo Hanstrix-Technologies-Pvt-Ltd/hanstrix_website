@@ -29,11 +29,11 @@ export const GetInTouchInfo = () => {
           <div>
             <h3 className="font-medium text-base sm:text-lg text-white">Call Us</h3>
             <a
-              href="tel:+919876543210"
+              href="tel:+919704328648"
               className="text-sm sm:text-base text-muted-foreground hover:text-white underline decoration-cyan-400/70 underline-offset-2 hover:decoration-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 rounded"
               aria-label="Call plus nine one nine eight seven six five four three two one zero"
             >
-              +91 98765 43210
+              +91 97043 28648
             </a>
           </div>
         </div>
@@ -43,20 +43,14 @@ export const GetInTouchInfo = () => {
           <MapPin className="text-cyan-400 flex-shrink-0 mt-0.5" size={20} />
           <div>
             <h3 className="font-medium text-base sm:text-lg text-white">Our Office</h3>
-            <p className="text-sm sm:text-base text-muted-foreground hover:text-white underline decoration-cyan-400/70 underline-offset-2 hover:decoration-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 rounded">
-              123 AI Avenue, Innovation Park, Hyderabad, India
-            </p>
-            {/* Or make it clickable: */}
-            {/*
             <a
-              href="https://www.google.com/maps/search/?api=1&query=123%20AI%20Avenue%2C%20Innovation%20Park%2C%20Hyderabad%2C%20India"
+              href="https://maps.app.goo.gl/98ujcdZVaXQ7U6H6A"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm sm:text-base text-muted-foreground hover:text-white underline decoration-cyan-400/70 underline-offset-2 hover:decoration-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 rounded"
             >
-              123 AI Avenue, Innovation Park, Hyderabad, India
+              Pragathi Nagar, Hyderabad, India
             </a>
-            */}
           </div>
         </div>
       </div>
