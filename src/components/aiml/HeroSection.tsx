@@ -58,7 +58,7 @@ export default function HeroSection({
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                 <Sparkles className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs sm:text-sm text-gray-300">
-                  Intelligent Automation • Real-time Insights • Personalization
+                  Intelligence • Real-time Insights • Personalization
                 </span>
               </span>
             </div>

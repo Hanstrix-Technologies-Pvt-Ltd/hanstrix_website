@@ -67,7 +67,7 @@ const HeroSection = () => {
             <Button className="btn w-full sm:w-auto">Explore Our Services</Button>
           </Link>
 
-          <Link href="#contact">
+          <Link href="\contact">
             <Button variant="outline" className="btn--outline w-full sm:w-auto font-bold py-3 px-8">
               Contact Us
             </Button>

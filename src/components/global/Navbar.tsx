@@ -70,11 +70,11 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-white flex items-center">
           <Image
-            src="/images/logo.png"
+            src="/images/final_logo.png"
             alt="Hanstrix Technologies Logo"
-            width={180}
-            height={10}
-            className="object-contain"
+            width={210}
+            height={40}
+            className="object-contain py-2"
             priority
           />
         </Link>
@@ -173,11 +173,11 @@ const Navbar = () => {
                 prefetch={false}
               >
                 <Image
-                  src="/images/logo_gpt1.png"
+                  src="/images/final_logo.png"
                   alt="Hanstrix Technologies Logo"
-                  width={150}
-                  height={30}
-                  className="object-contain"
+                  width={200}
+                  height={40}
+                  className="object-contain pt-5"
                 />
               </Link>
 

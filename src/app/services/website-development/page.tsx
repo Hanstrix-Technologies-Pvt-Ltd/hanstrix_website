@@ -9,7 +9,7 @@ import Benefits from "@/components/webdev/Benefits";
 import CTASection from "@/components/webdev/CTASection";
 
 export default function WebsiteDevelopmentPage() {
-  const serviceName = "Website Development Services";
+  const serviceName = "Website Development";
 
   return (
     <main className="relative text-white overflow-x-hidden">
