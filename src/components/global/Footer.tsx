@@ -14,14 +14,13 @@ const sections: Record<SectionKey, { name: string; href: string }[]> = {
     { name: "Digital Marketing", href: "/services/digital-marketing" },
   ],
   Company: [
-    { name: "About Us", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "/contact" },
+    { name: "About Us", href: "#about" },
+    // { name: "Careers", href: "/careers" },
+    { name: "Contact Us", href: "/contact" },
   ],
   Resources: [
-    { name: "Case Studies", href: "/case-studies" },
-    { name: "Documentation", href: "/docs" },
-    { name: "Support", href: "/support" },
+    { name: "Terms of Service", href: "/terms" },
+    { name: "Cookie Policy", href: "/cookies" },
     { name: "Privacy Policy", href: "/privacy" },
   ],
 };
@@ -195,8 +194,8 @@ export default function Footer() {
             <div className="text-gray-300 text-xs flex flex-wrap items-center gap-x-4 gap-y-1">
               <span>
                 Phone:{" "}
-                <a href="tel:+15551234567" className="text-white hover:underline">
-                  (555) 123-4567
+                <a href="tel:+919704328648" className="text-white hover:underline">
+                  +91 97043 28648
                 </a>
               </span>
               <span>
@@ -214,11 +213,6 @@ export default function Footer() {
           <p className="text-gray-400 text-xs sm:text-sm text-center md:text-left">
             <span suppressHydrationWarning>&copy; {year ?? ""}</span> Hanstrix Technologies. All rights reserved.
           </p>
-          <div className="flex gap-4 text-xs">
-            <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">Cookie Policy</Link>
-          </div>
         </div>
       </div>
     </footer>

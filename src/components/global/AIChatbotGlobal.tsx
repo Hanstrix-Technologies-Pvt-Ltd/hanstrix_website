@@ -225,7 +225,7 @@ export default function AIChatbotGlobal() {
                       <div className="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm bg-black/40 text-gray-300 border border-white/10">
                         <div className="flex items-center gap-2">
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          AI is typing…
+                          HAI is typing…
                         </div>
                       </div>
                     </div>

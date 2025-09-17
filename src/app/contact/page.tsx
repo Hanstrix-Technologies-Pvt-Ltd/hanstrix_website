@@ -33,7 +33,7 @@ const ContactPage = () => {
           className="section-spacing relative container container-gutters"
         >
           {/* Heading */}
-          <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-10 pt-5 md:pt-0">
+          <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-10">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gradient-neon leading-tight mb-3 sm:mb-4">
               Connect with the Future
             </h1>

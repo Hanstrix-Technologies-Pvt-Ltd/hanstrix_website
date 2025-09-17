@@ -176,7 +176,7 @@ export default function PrivacyPolicyPage() {
               <p className="mt-2">
                 For questions or privacy requests, contact:{" "}
                 <a className="underline decoration-cyan-400/70" href="mailto:privacy@hanstrix.com">
-                  privacy@hanstrix.com
+                  info@hanstrix.com
                 </a>
               </p>
             </section>

@@ -172,7 +172,7 @@ export default function TermsPage() {
               <p className="mt-2">
                 Questions about these Terms? Contact{" "}
                 <a className="underline decoration-cyan-400/70" href="mailto:legal@hanstrix.com">
-                  legal@hanstrix.com
+                  info@hanstrix.com
                 </a>
                 .
               </p>

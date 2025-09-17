@@ -13,21 +13,21 @@ type Testimonial = {
 const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      "Hanstrix Technologies transformed our online presence. Their expertise in digital marketing drove a significant increase in our lead generation, and the support was excellent.",
-    name: "John Doe",
-    title: "CEO, Tech Solutions Inc.",
+      "Hanstrix delivered a clean, fast, and secure website for Radiant. The team understood our brand, executed quickly, and the final site performs flawlessly across devices.",
+    name: "Ashok Godavarti",
+    title: "CEO, Radiant Research Services Pvt Ltd",
   },
   {
     quote:
-      "The customized ERP solution they developed streamlined our operations and cut our costs by 20%. The team was professional and highly responsive.",
-    name: "Jane Smith",
-    title: "Operations Manager, Global Corp.",
+      "The customized internal ERP system delivered by Hanstrix streamlined our parking operations, automated reporting, and significantly improved efficiency across departments.",
+    name: "Mohit Gowda",
+    title: "CEO, Stelz Parking Pvt Ltd",
   },
   {
     quote:
-      "Their website development team is top-notch. They delivered a beautiful, fast, and secure website that has received nothing but praise from our users.",
-    name: "Alex Johnson",
-    title: "Founder, Innovate Co.",
+      "Hanstrix’s digital marketing plus AI/ML strategy boosted our reach and decision-making. Their data-driven approach and execution quality stood out from day one.",
+    name: "Kalagara Vijaya Radha Krishna",
+    title: "CEO, Stock Navii",
   },
 ];
 
