@@ -33,12 +33,47 @@ export default function AIChatbotGlobal() {
   const endRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
+  // NEW: lock scroll chaining for chat body
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartY = useRef(0);
+
+  const onWheelCapture = (e: React.WheelEvent<HTMLDivElement>) => {
+  e.stopPropagation(); // never let wheel bubble to page
+  const el = scrollRef.current;
+  if (!el) return;
+  const atTop = el.scrollTop <= 0;
+  const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+  const goingUp = e.deltaY < 0;
+  const goingDown = e.deltaY > 0;
+  if ((atTop && goingUp) || (atBottom && goingDown)) {
+    e.preventDefault(); // block page scroll at edges
+  }
+};
+
+
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const dy = e.touches[0].clientY - touchStartY.current;
+    const atTop = el.scrollTop <= 0;
+    const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    const goingUp = dy > 0;
+    const goingDown = dy < 0;
+    if ((atTop && goingUp) || (atBottom && goingDown)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   // restore chat
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw);
+        const parsed = JSON.parse(raw) as ChatMsg[];
         if (Array.isArray(parsed) && parsed.length) setMessages(parsed);
       }
     } catch {}
@@ -103,11 +138,11 @@ export default function AIChatbotGlobal() {
         }),
       });
 
-      const data = await res.json();
+      const data: { response?: string; error?: string } = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to get reply");
 
-      setMessages((prev) => [...prev, { role: "bot", text: data.response }]);
-    } catch (err: Error | unknown) {
+      setMessages((prev) => [...prev, { role: "bot", text: data.response ?? "" }]);
+    } catch (err: unknown) {
       if ((err as Error)?.name !== "AbortError") {
         setError((err as Error)?.message || "Something went wrong");
         setMessages((prev) => [
@@ -176,7 +211,7 @@ export default function AIChatbotGlobal() {
 
               {/* Body: suggestions + scrollable messages */}
               <div className="flex-1 min-h-0 relative flex flex-col">
-                {/* Quick prompts row (non-scrollable, visible below header) */}
+                {/* Quick prompts row */}
                 {messages.length <= 2 && (
                   <div className="shrink-0 px-3 pt-3 pb-2 flex flex-wrap gap-2 bg-black/20">
                     {quickPrompts.map((p) => (
@@ -192,10 +227,14 @@ export default function AIChatbotGlobal() {
                   </div>
                 )}
 
-                {/* Scrollable messages */}
+                {/* Scrollable messages (locked) */}
                 <div
-                  className="flex-1 overflow-y-auto px-3 py-3 space-y-3 custom-scrollbar"
-                  style={{ pointerEvents: "auto" }}
+                  ref={scrollRef}
+                  className="flex-1 overflow-y-auto px-3 py-3 space-y-3 custom-scrollbar overscroll-contain"
+                  style={{ pointerEvents: "auto", overscrollBehavior: "contain", touchAction: "pan-y" }}
+                  onWheelCapture={onWheelCapture}
+                  onTouchStart={onTouchStart}
+                  onTouchMove={onTouchMove}
                 >
                   {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>

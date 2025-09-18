@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi,} from "@/components/ui/carousel";
 
 type Testimonial = {
   quote: string;
@@ -19,7 +20,7 @@ const TESTIMONIALS: Testimonial[] = [
   },
   {
     quote:
-      "The customized internal ERP system delivered by Hanstrix streamlined our parking operations, automated reporting, and significantly improved efficiency across departments.",
+      "The customized ERP system delivered by Hanstrix streamlined our parking operations, automated reporting, and significantly improved efficiency across departments.",
     name: "Mohit Gowda",
     title: "CEO, Stelz Parking Pvt Ltd",
   },
@@ -34,84 +35,50 @@ const TESTIMONIALS: Testimonial[] = [
 export default function TestimonialsSection() {
   const N = TESTIMONIALS.length;
 
-  // ---- Mobile: snap carousel with seamless infinite wrap ----
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const [cellWidth, setCellWidth] = useState(0);
+  const [api, setApi] = useState<CarouselApi | null>(null);
   const [active, setActive] = useState(0);
-  const [snapOn, setSnapOn] = useState(true);
+  const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const setItemRef = (idx: number) => (el: HTMLDivElement | null) => {
+    itemRefs.current[idx] = el;
+  };
+  const [uniformH, setUniformH] = useState<number | null>(null);
 
-  // Tripled data for infinite loop: [A B C | A B C | A B C]
-  const tripled = useMemo(
-    () => [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS],
-    []
-  );
-  const baseStartIndex = N; // land on middle copy
+  const measureHeights = () => {
+    const h = Math.max(
+      0,
+      ...itemRefs.current.map((el) => (el ? el.offsetHeight : 0))
+    );
+    setUniformH(Number.isFinite(h) && h > 0 ? h : null);
+  };
 
-  // Measure cell width and land in middle copy on mount/resize
   useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
+    const rAF = requestAnimationFrame(measureHeights);
+    const onResize = () => measureHeights();
+    window.addEventListener("resize", onResize);
+    const ro = new ResizeObserver(measureHeights);
+    itemRefs.current.forEach((el) => el && ro.observe(el));
 
-    const measure = () => {
-      const w = el.clientWidth;
-      setCellWidth(w);
-      setSnapOn(false);
-      el.scrollTo({ left: baseStartIndex * w, behavior: "auto" });
-      requestAnimationFrame(() => setSnapOn(true));
-    };
-
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [baseStartIndex]);
-
-  // Seamless wrap (last→first and first→last) with invisible teleport
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el || cellWidth === 0) return;
-
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const raw = el.scrollLeft / cellWidth;
-        const idx = Math.round(raw);
-
-        // Left outer copy (0..N-1) → jump to middle
-        if (idx < N) {
-          setSnapOn(false);
-          el.scrollTo({ left: (idx + N) * cellWidth, behavior: "auto" });
-          requestAnimationFrame(() => setSnapOn(true));
-          setActive(idx);
-          return;
-        }
-
-        // Right outer copy (2N..3N-1) → jump to middle
-        if (idx >= 2 * N) {
-          setSnapOn(false);
-          el.scrollTo({ left: (idx - N) * cellWidth, behavior: "auto" });
-          requestAnimationFrame(() => setSnapOn(true));
-          setActive(idx - 2 * N);
-          return;
-        }
-
-        // Middle copy → normal
-        setActive(idx - N);
-      });
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      cancelAnimationFrame(raf);
-      el.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rAF);
+      window.removeEventListener("resize", onResize);
+      ro.disconnect();
     };
-  }, [cellWidth, N]);
+  }, []);
+
+  useEffect(() => {
+    if (!api) return;
+    const onSelect = () => setActive(api.selectedScrollSnap());
+    api.on("select", onSelect);
+    onSelect();
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+  const bodyStyle = uniformH ? { minHeight: `${uniformH}px` } : undefined;
 
   return (
     <section id="testimonials" className="relative section-spacing">
       <div className="container mx-auto max-w-7xl container-gutters">
-        {/* Center wrapper ensures gradient inline-block headings are centered */}
         <div className="text-center">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-neon inline-block">
             Testimonials
@@ -119,7 +86,7 @@ export default function TestimonialsSection() {
         </div>
       </div>
 
-      {/* md-only: marquee scrolling (since N > 2) */}
+      {/* md-only: marquee (duplicate list) */}
       {N > 2 && (
         <div className="hidden md:block lg:hidden mt-8">
           <div className="relative overflow-hidden">
@@ -133,7 +100,6 @@ export default function TestimonialsSection() {
                   "linear-gradient(to right, transparent, black 8%, black 92%, transparent)",
               }}
             />
-            {/* duplicate once for seamless loop */}
             <div className="flex w-max animate-ts-marquee-slow">
               {[...TESTIMONIALS, ...TESTIMONIALS].map((t, idx) => (
                 <div
@@ -142,10 +108,12 @@ export default function TestimonialsSection() {
                 >
                   <Card className="bg-transparent border-white/20 text-white p-6 h-full">
                     <CardContent className="p-0">
-                      <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
-                      <div className="text-right mt-4">
-                        <p className="font-semibold text-cyan-400">{t.name}</p>
-                        <p className="text-sm text-gray-400">{t.title}</p>
+                      <div style={bodyStyle}>
+                        <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
+                        <div className="text-right mt-4">
+                          <p className="font-semibold text-cyan-400">{t.name}</p>
+                          <p className="text-sm text-gray-400">{t.title}</p>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -166,10 +134,15 @@ export default function TestimonialsSection() {
                 className="bg-transparent border-white/20 text-white p-6 h-full"
               >
                 <CardContent className="p-0">
-                  <p className="text-base leading-relaxed opacity-90">{t.quote}</p>
-                  <div className="text-right mt-4">
-                    <p className="font-semibold text-cyan-400">{t.name}</p>
-                    <p className="text-sm text-gray-400">{t.title}</p>
+                  <div
+                    ref={setItemRef(idx)}
+                    style={bodyStyle}
+                  >
+                    <p className="text-base leading-relaxed opacity-90">{t.quote}</p>
+                    <div className="text-right mt-4">
+                      <p className="font-semibold text-cyan-400">{t.name}</p>
+                      <p className="text-sm text-gray-400">{t.title}</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -178,63 +151,70 @@ export default function TestimonialsSection() {
         </div>
       </div>
 
-      {/* sm-only: 1-at-a-time snap carousel, seamless infinite */}
+      {/* sm-only: shadcn carousel (loop + one-card-per-swipe), equal heights */}
       <div className="md:hidden mt-6">
-        <div
-          ref={trackRef}
-          className={`flex overflow-x-auto no-scrollbar w-full touch-pan-x overscroll-x-contain ${
-            snapOn ? "snap-x snap-mandatory" : "snap-none"
-          }`}
-          style={{
-            scrollSnapType: snapOn ? "x mandatory" : "none",
-            WebkitOverflowScrolling: "touch",
+        <Carousel
+          setApi={setApi}
+          opts={{
+            loop: true,
+            align: "start",
+            skipSnaps: false,
+            dragFree: false,
           }}
+          className="w-full"
         >
-          {tripled.map((t, i) => (
-            <div
-              key={`m-${i}`}
-              className="shrink-0 w-full px-4 snap-start"
-              style={{ scrollSnapAlign: "start", scrollSnapStop: "always" }}
-            >
-              <div className="container mx-auto max-w-3xl">
-                <Card className="bg-transparent border-white/20 text-white p-5 h-full">
-                  <CardContent className="p-0">
-                    <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
-                    <div className="text-right mt-4">
-                      <p className="font-semibold text-cyan-400">{t.name}</p>
-                      <p className="text-sm text-gray-400">{t.title}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          ))}
-        </div>
+          <CarouselContent>
+            {TESTIMONIALS.map((t, i) => (
+              <CarouselItem key={`m-${i}`} className="basis-full">
+                <div className="px-4">
+                  <div className="container mx-auto max-w-3xl">
+                    <Card className="bg-transparent border-white/20 text-white p-5 h-full">
+                      <CardContent className="p-0">
+                        {/* measure base items here too */}
+                        <div
+                          ref={setItemRef(i)}
+                          style={bodyStyle}
+                        >
+                          <p className="text-[15px] leading-relaxed opacity-90">{t.quote}</p>
+                          <div className="text-right mt-4">
+                            <p className="font-semibold text-cyan-400">{t.name}</p>
+                            <p className="text-sm text-gray-400">{t.title}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
 
-        {/* small progress bars */}
+        {/* progress bars (click to jump) */}
         <div className="mt-5 px-8">
           <div className="mx-auto max-w-[240px] w-full flex items-center gap-2">
-            {Array.from({ length: N }).map((_, i) => {
+            {TESTIMONIALS.map((_, i) => {
               const isActive = i === active;
               return (
-                <span
+                <button
                   key={i}
-                  aria-hidden
+                  type="button"
+                  onClick={() => api?.scrollTo(i)}
                   className="relative h-1 flex-1 rounded-full overflow-hidden bg-white/20"
+                  aria-label={`Go to testimonial ${i + 1}`}
                 >
                   <span
                     className={`absolute left-0 top-0 h-full ${
                       isActive ? "w-full" : "w-0"
                     } bg-gradient-to-r from-cyan-400 to-violet-500 transition-[width] duration-300`}
                   />
-                </span>
+                </button>
               );
             })}
           </div>
         </div>
       </div>
 
-      {/* local keyframes */}
       <style jsx>{`
         @keyframes ts-marquee-slow {
           0% { transform: translateX(0%); }
