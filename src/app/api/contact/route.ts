@@ -7,7 +7,7 @@ import nodemailer from "nodemailer";
 
 /** ===== Brand / contact ===== */
 const COMPANY_NAME = "Hanstrix Technologies";
-const SITE_URL = "https://hanstrixtechnologies.com";
+const SITE_URL = "https://hanstrix.com";
 const TEAM_INBOX = "info@hanstrix.com";
 const SUPPORT_PHONE_LABEL = "+91 97043 28648";
 const SUPPORT_PHONE_TEL = SUPPORT_PHONE_LABEL.replace(/[^\d+]/g, "");

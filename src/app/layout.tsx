@@ -13,11 +13,11 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = "https://hanstrixtechnologies.com";
+const siteUrl = "https://hanstrix.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Hanstrix Technologies",
+  title: "Hanstrix Technologies - Leading Digital Transformation Solutions",
   description: "Leading Digital Transformation Solutions",
   openGraph: { url: siteUrl, siteName: "Hanstrix Technologies" },
   twitter: { card: "summary_large_image" },
