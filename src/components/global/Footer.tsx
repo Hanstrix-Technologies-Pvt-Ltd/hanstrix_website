@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { FaFacebookF, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import { FaFacebookF, FaInstagram } from "react-icons/fa";
 
 type SectionKey = "Services" | "Company" | "Resources";
 
@@ -28,7 +28,7 @@ const sections: Record<SectionKey, { name: string; href: string }[]> = {
 const socials = [
   { name: "Facebook", href: "https://www.facebook.com/hanstrixtechnologies", icon: <FaFacebookF className="h-5 w-5" /> },
   { name: "Instagram", href: "https://www.instagram.com/hanstrixtechnologies", icon: <FaInstagram className="h-5 w-5" /> },
-  { name: "LinkedIn", href: "https://in.linkedin.com/", icon: <FaLinkedinIn className="h-5 w-5" /> },
+  // { name: "LinkedIn", href: "https://in.linkedin.com/", icon: <FaLinkedinIn className="h-5 w-5" /> },
 ];
 
 export default function Footer() {
